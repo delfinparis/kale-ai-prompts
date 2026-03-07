@@ -722,6 +722,7 @@ function OnboardingBanner({ onDismiss }: { onDismiss: () => void }) {
           { num: "1", text: "Select category" },
           { num: "2", text: "Copy prompt" },
           { num: "3", text: "Paste into AI" },
+          { num: "4", text: "Get more biz!" },
         ].map((step) => (
           <div
             key={step.num}
@@ -751,7 +752,7 @@ function OnboardingBanner({ onDismiss }: { onDismiss: () => void }) {
               {step.num}
             </span>
             {step.text}
-            {step.num !== "3" && (
+            {step.num !== "4" && (
               <span style={{ color: "#334155", marginLeft: 2 }}>&rarr;</span>
             )}
           </div>
