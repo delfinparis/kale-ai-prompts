@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { spaceGrotesk } from "./fonts";
 import promptsData from "../data/prompts.json";
 
@@ -21,12 +21,20 @@ interface Prompt {
   whatYouGet: string | null;
 }
 
+interface Subgroup {
+  id: string;
+  label: string;
+  desc: string;
+  filter: (p: Prompt) => boolean;
+}
+
 interface Subcategory {
   id: string;
   label: string;
   desc: string;
   filter: (p: Prompt) => boolean;
   featured?: string[];
+  subgroups?: Subgroup[];
 }
 
 const prompts = promptsData as Prompt[];
@@ -65,12 +73,38 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       id: "listing-desc",
       label: "Listing Descriptions",
       desc: "MLS, luxury, condo, investment, price reduction",
-      featured: ["ch6-1", "ch6-2", "ch6-3"],
+      featured: ["ch6-6.1", "ch6-6.2", "ch6-6.3"],
       filter: (p) =>
         p.category === "write" &&
         /listing|mls|description|luxury listing|condo|investment property|price reduction|zillow|property description|townhome|short sale|multi-family/i.test(
           p.title
         ),
+      subgroups: [
+        {
+          id: "mls-descriptions",
+          label: "MLS Descriptions",
+          desc: "Standard, luxury, condo, land, investment",
+          filter: (p) => /mls|description|luxury property|starter home|condo|townhouse|vacant land|investment property/i.test(p.title),
+        },
+        {
+          id: "listing-social",
+          label: "Listing Social Posts",
+          desc: "New listing, just sold, coming soon, price improvement",
+          filter: (p) => /announcement|just sold|coming soon|teaser|open house promotion|price improvement/i.test(p.title),
+        },
+        {
+          id: "listing-emails",
+          label: "Listing Emails",
+          desc: "New listing blasts, broker emails, price reduction",
+          filter: (p) => /email|blast|broker-to-broker|price reduction email|newsletter|neighborhood context/i.test(p.title),
+        },
+        {
+          id: "listing-marketing",
+          label: "Marketing Materials",
+          desc: "Flyers, brochures, video scripts, launch plans",
+          filter: (p) => /flyer|brochure|video|walkthrough|narration|launch|strategy|stale|refresh|presentation|pitch|withdrawn|post-closing|comparative|neighborhood feature/i.test(p.title),
+        },
+      ],
     },
     {
       id: "emails-letters",
@@ -125,7 +159,7 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch3-46", "ch3-45", "ch3-40"],
       filter: (p) =>
         p.category === "followup" &&
-        /cold|dead|dormant|reactivat|re-engage|silent|ghost|lost/i.test(
+        /cold|dead|dormant|reactivat|re-engage|silent|ghost|lost|break-up|recovery|trigger event|hidden opportunity|purge/i.test(
           p.title + " " + p.bestFor
         ),
     },
@@ -136,25 +170,146 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch3-23", "ch3-13", "ch3-22"],
       filter: (p) =>
         p.category === "followup" &&
-        /past client|referral|nurture|milestone|anniversary|sphere|soi|closing|appreciation/i.test(
+        /past client|referral|nurture|milestone|anniversary|sphere|soi|closing|appreciation|pop-by|home value|touchpoint|top of mind|thought of you|maintenance|personalized|intelligence profile|communication preference/i.test(
           p.title + " " + p.bestFor
         ),
+      subgroups: [
+        {
+          id: "client-intel",
+          label: "Client Intelligence",
+          desc: "Profiles, preferences, personalization",
+          filter: (p) => /intelligence|preference|personalized|personality|saw this|thought of you|adapter/i.test(p.title),
+        },
+        {
+          id: "stay-in-touch",
+          label: "Stay-in-Touch Messages",
+          desc: "Milestones, home value updates, pop-bys",
+          filter: (p) => /milestone|home value|maintenance|pop-by|top of mind|touchpoint|voice note|market update/i.test(p.title),
+        },
+        {
+          id: "referral-asks",
+          label: "Referral Asks & Thank-Yous",
+          desc: "Non-cringe referral scripts, appreciation",
+          filter: (p) => /referral|thank-you|appreciation|event invitation/i.test(p.title),
+        },
+      ],
+    },
+    {
+      id: "drip-sequences",
+      label: "Email Drip Campaigns",
+      desc: "Buyer, seller, past client, and cold lead sequences",
+      featured: ["ch3-37", "ch3-38", "ch3-39"],
+      filter: (p) =>
+        p.category === "followup" &&
+        /drip|sequence|email.*campaign|subject line|automation|multi-channel|channel selection|escalation|critical moment|quarterly.*assessment|engagement signal|frequency matrix|send guide/i.test(
+          p.title
+        ),
+      subgroups: [
+        {
+          id: "drip-campaigns",
+          label: "Drip Campaigns",
+          desc: "Buyer, seller, past client, cold lead sequences",
+          filter: (p) => /drip|campaign|sequence|subject line/i.test(p.title),
+        },
+        {
+          id: "automation-rules",
+          label: "Automation & Systems",
+          desc: "CRM workflows, pause rules, multi-channel",
+          filter: (p) => /automat|multi-channel|channel selection|escalation|critical moment|frequency|engagement signal|send guide|quarterly|sounds human/i.test(p.title),
+        },
+      ],
     },
     {
       id: "open-house-fu",
       label: "Open House Follow-Up",
-      desc: "Visitor engagement, sign-in, conversion",
+      desc: "Planning, scripts, staging, objection handling",
       featured: ["ch4-43", "ch4-44", "ch4-45"],
       filter: (p) =>
         p.category === "followup" && p.chapter === 4,
+      subgroups: [
+        {
+          id: "oh-planning",
+          label: "Planning & Strategy",
+          desc: "Decision framework, goals, timing, partners",
+          filter: (p) => /decision|goal|timing|multi-open|partner|co-hosting/i.test(p.title),
+        },
+        {
+          id: "oh-promotion",
+          label: "Promotion & Marketing",
+          desc: "Social posts, emails, door knocks, video",
+          filter: (p) => /instagram|facebook|stories|countdown|video|reels|tiktok|email.*angle|door-knock|nextdoor|event page|checklist.*14/i.test(p.title),
+        },
+        {
+          id: "oh-staging",
+          label: "Staging & Prep",
+          desc: "Staging, cleaning, curb appeal, tech setup",
+          filter: (p) => /staging|cleaning|curb|walkthrough|hiding|sign placement|sensory|music|scent|refreshment|visitor flow|safety|technology|assistant|delegation|materials/i.test(p.title),
+        },
+        {
+          id: "oh-scripts",
+          label: "Talking Points & Scripts",
+          desc: "Greeting, qualifying, lifestyle stories",
+          filter: (p) => /talking point|lifestyle|neighborhood pitch|brochure|comparable|greeting|qualifying|conversation|engagement|closing conversation|exit|recovery|awkward|first-time buyer.*guide|investor.*guide|neighbor.*guide|represented|move-up|downsizer/i.test(p.title),
+        },
+        {
+          id: "oh-objections",
+          label: "Objection Handling",
+          desc: "Price, condition, neighborhood, 'need to think'",
+          filter: (p) => /objection|overpriced|renovation objection|needs too much|neighborhood objection|think about it/i.test(p.title),
+        },
+        {
+          id: "oh-capture",
+          label: "Lead Capture & Follow-Up",
+          desc: "Sign-in, texts, post-event processing",
+          filter: (p) => /sign-in|text for detail|post-event|data processing|incentive|scorecard|performance|content captured|recap/i.test(p.title),
+        },
+      ],
     },
     {
       id: "networking",
       label: "Networking & Relationships",
-      desc: "Introductions, partnerships, events",
+      desc: "Introductions, partnerships, LinkedIn, events",
       featured: ["ch5-9", "ch5-19", "ch5-29"],
       filter: (p) =>
         p.category === "followup" && p.chapter === 5,
+      subgroups: [
+        {
+          id: "net-strategy",
+          label: "Strategy & Planning",
+          desc: "Event selection, Dream 25, 90-day calendar",
+          filter: (p) => /highest-roi|dream 25|90-day|network architecture|choosing.*groups|goal-setting/i.test(p.title),
+        },
+        {
+          id: "net-brand",
+          label: "Your Personal Brand",
+          desc: "Introductions, origin story, positioning",
+          filter: (p) => /introduction|origin story|what makes you|positioning|linkedin.*about|pre-event|non-pitch|signature stories|personality type|business card|cocktail/i.test(p.title),
+        },
+        {
+          id: "net-conversation",
+          label: "Conversation Skills",
+          desc: "Frameworks, scripts, handling objections",
+          filter: (p) => /conversation flow|go-deeper|scripts.*scenario|already have a realtor|new agent value|exit strateg|bridge question|thought leader|active listening|real work|isn't real/i.test(p.title),
+        },
+        {
+          id: "net-partners",
+          label: "Referral Partners",
+          desc: "Outreach, coffee meetings, joint events",
+          filter: (p) => /referral partner|first outreach|coffee meeting|value i bring|thank-you|agent-to-agent|power partner|joint client|annual partner|appreciation/i.test(p.title),
+        },
+        {
+          id: "net-linkedin",
+          label: "LinkedIn & Social",
+          desc: "Profile, DMs, content, engagement routine",
+          filter: (p) => /linkedin|instagram dm|online community|converting online|newsletter.*professional/i.test(p.title),
+        },
+        {
+          id: "net-followup",
+          label: "Follow-Up & Nurture",
+          desc: "Post-event, reconnect, value bombs",
+          filter: (p) => /24-hour|follow-up.*response|reconnect|relationship.*ladder|monthly partner|quarterly value|follow-up.*contact|value bomb|warm introduction|weekly relationship|board of advisors/i.test(p.title),
+        },
+      ],
     },
   ],
   coach: [
@@ -176,20 +331,40 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch8-7", "ch8-8", "ch7-5"],
       filter: (p) =>
         p.category === "coach" &&
-        /buyer|scared|hesitant|consultation|first-time|value pitch/i.test(
+        /buyer|scared|hesitant|consultation|first-time|value pitch|six-month|can't commit|lowball|parent|underbuyer|relocat|zillow|redfin|bad experience|just looking|crash|friend.*agent/i.test(
           p.title
         ),
     },
     {
       id: "negotiation",
       label: "Negotiation & Offers",
-      desc: "Counters, multiple offers, appraisals",
+      desc: "Counters, inspections, appraisals, multiple offers",
       featured: ["ch7-1", "ch7-2", "ch7-4"],
       filter: (p) =>
         p.category === "coach" &&
-        /offer|counter|appraisal|inspection|repair|cash|negotiat|net sheet|multi-offer/i.test(
+        /offer|counter|appraisal|inspection|repair|cash|negotiat|net sheet|multi-offer|below-asking|walk-away|price reduction|worth what|overprice.*50|comparing.*offers|best and final/i.test(
           p.title
         ),
+      subgroups: [
+        {
+          id: "neg-offers",
+          label: "Making & Winning Offers",
+          desc: "Compelling offers, multi-offer, cash competition",
+          filter: (p) => /compelling offer|multi-offer|below-asking|competing against|best and final|positioning/i.test(p.title),
+        },
+        {
+          id: "neg-inspections",
+          label: "Inspections & Appraisals",
+          desc: "Repair requests, low appraisals, walk-away",
+          filter: (p) => /inspection|repair|appraisal|walk-away|terminate/i.test(p.title),
+        },
+        {
+          id: "neg-pricing",
+          label: "Pricing Conversations",
+          desc: "Price reductions, Zillow, overpricing, seller net",
+          filter: (p) => /price reduction|worth what|overprice|net sheet|counter-offer|explaining.*price|comparing.*offers|multiple offer presentation/i.test(p.title),
+        },
+      ],
     },
     {
       id: "tough-convos",
@@ -198,9 +373,43 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch7-21", "ch7-26", "ch7-15"],
       filter: (p) =>
         p.category === "coach" &&
-        /difficult|tough|commission|firing|breakup|delay|unresponsive|back out|restrict|price reduction conversation/i.test(
+        /difficult|tough|commission|firing|breakup|delay|unresponsive|back out|restrict|wire fraud|milestone email|closing timeline|thank you.*what's next/i.test(
           p.title
         ),
+    },
+    {
+      id: "roleplay",
+      label: "Roleplay & Practice",
+      desc: "30 interactive scenarios to rehearse",
+      featured: ["ch8-1", "ch8-7", "ch8-13"],
+      filter: (p) =>
+        p.category === "coach" && p.chapter === 8,
+      subgroups: [
+        {
+          id: "rp-sellers",
+          label: "Seller Roleplays",
+          desc: "Palace seller, FSBO, expired, divorce, spring",
+          filter: (p) => /palace|discount broker|fsbo|expired|spring|divorce|price reduction conversation/i.test(p.title),
+        },
+        {
+          id: "rp-buyers",
+          label: "Buyer Roleplays",
+          desc: "Scared buyer, lowballer, parent-controlled",
+          filter: (p) => /first-time buyer|six-month|lowball|parent|underbuyer|relocat/i.test(p.title),
+        },
+        {
+          id: "rp-objections",
+          label: "Common Objections",
+          desc: "Commission, Zillow, bad experience, not ready",
+          filter: (p) => /commission|friend.*agent|crash|just looking|zillow|redfin|bad experience/i.test(p.title),
+        },
+        {
+          id: "rp-skills",
+          label: "Key Skills Practice",
+          desc: "Cold calls, referrals, presentations, pitches",
+          filter: (p) => /inspection news|bidding war|referral|cold call|presenting|negotiating repair|panicked|why should|networking|coaching.*new agent/i.test(p.title),
+        },
+      ],
     },
   ],
   strategy: [
@@ -211,17 +420,55 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch1-1", "ch1-2", "ch1-10"],
       filter: (p) =>
         p.category === "strategy" &&
-        /prompt|ai |negative prompting|few-shot|chain-of-thought|iterative|formatting|output|swipe file|brand voice/i.test(
+        /prompt|ai |negative prompting|few-shot|chain-of-thought|iterative|formatting|output|swipe file|brand voice|disclosure|implementation roadmap/i.test(
           p.title
         ),
     },
     {
       id: "lead-gen",
       label: "Lead Generation Plans",
-      desc: "Audits, budgets, 90-day sprints, prospecting",
+      desc: "Audits, budgets, social, ads, SEO, prospecting",
       featured: ["ch2-1", "ch2-3", "ch2-5"],
       filter: (p) =>
         p.category === "strategy" && p.chapter === 2,
+      subgroups: [
+        {
+          id: "lg-audit",
+          label: "Audit & Planning",
+          desc: "Lead source audit, budget, sprint plans, scorecard",
+          filter: (p) => /audit|portfolio|sprint|budget|competitive|scorecard|lead scoring/i.test(p.title),
+        },
+        {
+          id: "lg-social",
+          label: "Social Media Strategy",
+          desc: "Platform ranking, content calendars, DMs, profiles",
+          filter: (p) => /social media|instagram|facebook|tiktok|reels|linkedin|platform|dm |profile optimization|social proof/i.test(p.title),
+        },
+        {
+          id: "lg-ads",
+          label: "Paid Advertising",
+          desc: "Google Ads, Facebook Ads, retargeting, A/B testing",
+          filter: (p) => /ad |ads |campaign|retarget|headline.*test|lead form|video ad/i.test(p.title),
+        },
+        {
+          id: "lg-seo",
+          label: "SEO & Content",
+          desc: "Keywords, Google Business, blog, video, reviews",
+          filter: (p) => /seo|keyword|google business|blog|youtube|video.*repurpos|review|content pillar|market update/i.test(p.title),
+        },
+        {
+          id: "lg-magnets",
+          label: "Lead Magnets & Landing Pages",
+          desc: "Buyer guides, home valuation, landing pages",
+          filter: (p) => /lead magnet|landing page|home valuation|buyer guide/i.test(p.title),
+        },
+        {
+          id: "lg-outreach",
+          label: "Direct Outreach & Prospecting",
+          desc: "Email sequences, FSBO, expired, door-knocking, events",
+          filter: (p) => /speed-to-lead|welcome email|market update email|reactivation|database|hidden opportunity|purge|first-time buyer.*playbook|luxury market|investor.*system|fsbo|direct mail|door-knock|community event/i.test(p.title),
+        },
+      ],
     },
     {
       id: "workflows",
@@ -230,7 +477,18 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch1-11", "ch1-12", "ch1-13"],
       filter: (p) =>
         p.category === "strategy" &&
-        /workflow|routine|morning|admin|automat|checklist|crm|task|decision|end-of-day|wrap-up|meeting prep|tech stack/i.test(
+        /workflow|routine|morning|admin|automat|checklist|crm|task|decision|end-of-day|wrap-up|meeting prep|tech stack|delegation|team|communication hub|review|client meeting/i.test(
+          p.title
+        ),
+    },
+    {
+      id: "market-analysis",
+      label: "Market Analysis & Data",
+      desc: "CMA, neighborhood analysis, market predictions",
+      featured: ["ch1-28", "ch1-29", "ch1-30"],
+      filter: (p) =>
+        p.category === "strategy" &&
+        /neighborhood deep|data-driven|cma|market predict|seasonal market|property search|showing prep|competitive offer strategy/i.test(
           p.title
         ),
     },
@@ -241,7 +499,18 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch1-36", "ch1-35", "ch1-37"],
       filter: (p) =>
         p.category === "strategy" &&
-        /content|calendar|brand|seo|video|repurpos|market update|market prediction|blog|fair housing|performance review|neighborhood deep/i.test(
+        /content|calendar|brand|seo|video|repurpos|market update|blog|newsletter|visual explainer|first-time buyer.*email|seller preparation|faq|objection-response|success story/i.test(
+          p.title
+        ),
+    },
+    {
+      id: "compliance",
+      label: "Compliance & Risk",
+      desc: "AI disclosure, documentation, contract review, crisis",
+      featured: ["ch1-50", "ch1-51", "ch1-52"],
+      filter: (p) =>
+        p.category === "strategy" &&
+        /disclosure|documentation|contract review|crisis|fair housing|risk/i.test(
           p.title
         ),
     },
@@ -306,35 +575,18 @@ function highlightBrackets(text: string): string {
   });
 }
 
-function searchPrompts(query: string): Prompt[] {
-  const q = query.toLowerCase().trim();
-  if (!q) return [];
+function getSubcategoryResults(sub: Subcategory, subgroupId?: string): Prompt[] {
+  let matching = prompts.filter(sub.filter);
 
-  const words = q.split(/\s+/);
-
-  const scored = prompts.map((p) => {
-    let score = 0;
-    if (p.title.toLowerCase().includes(q)) score += 50;
-    for (const w of words) {
-      if (p.title.toLowerCase().includes(w)) score += 10;
-      if (p.bestFor.toLowerCase().includes(w)) score += 5;
-      if (p.prompt.toLowerCase().includes(w)) score += 2;
-      if (p.chapterTitle.toLowerCase().includes(w)) score += 3;
+  // If a subgroup is selected, further filter
+  if (subgroupId && sub.subgroups) {
+    const subgroup = sub.subgroups.find((sg) => sg.id === subgroupId);
+    if (subgroup) {
+      matching = matching.filter(subgroup.filter);
     }
-    return { prompt: p, score };
-  });
+  }
 
-  return scored
-    .filter((s) => s.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 8)
-    .map((s) => s.prompt);
-}
-
-function getSubcategoryResults(sub: Subcategory): Prompt[] {
-  const matching = prompts.filter(sub.filter);
   const featured = sub.featured || [];
-
   const featuredPrompts = featured
     .map((id) => matching.find((p) => p.id === id))
     .filter(Boolean) as Prompt[];
@@ -467,10 +719,9 @@ function OnboardingBanner({ onDismiss }: { onDismiss: () => void }) {
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {[
-          { num: "1", text: "Find a prompt" },
-          { num: "2", text: "Copy it" },
-          { num: "3", text: "Paste into ChatGPT or Claude" },
-          { num: "4", text: "Fill in the [brackets]" },
+          { num: "1", text: "Select category" },
+          { num: "2", text: "Copy prompt" },
+          { num: "3", text: "Paste into AI" },
         ].map((step) => (
           <div
             key={step.num}
@@ -500,7 +751,7 @@ function OnboardingBanner({ onDismiss }: { onDismiss: () => void }) {
               {step.num}
             </span>
             {step.text}
-            {step.num !== "4" && (
+            {step.num !== "3" && (
               <span style={{ color: "#334155", marginLeft: 2 }}>&rarr;</span>
             )}
           </div>
@@ -648,6 +899,104 @@ function BeforeAfterExample() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SubgroupPicker({
+  subcategory,
+  parentFilter,
+  onSelect,
+}: {
+  subcategory: Subcategory;
+  parentFilter: (p: Prompt) => boolean;
+  onSelect: (subgroupId: string) => void;
+}) {
+  const subgroups = subcategory.subgroups || [];
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        paddingBottom: 48,
+      }}
+    >
+      {subgroups.map((sg) => {
+        const parentMatches = prompts.filter(parentFilter);
+        const count = parentMatches.filter(sg.filter).length;
+        return (
+          <button
+            key={sg.id}
+            onClick={() => onSelect(sg.id)}
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 14,
+              padding: "18px 20px",
+              cursor: "pointer",
+              textAlign: "left",
+              color: "inherit",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              transition: "border-color 0.2s, background 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(56,189,248,0.3)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: 15,
+                  fontWeight: 600,
+                  color: "#f1f5f9",
+                  marginBottom: 3,
+                }}
+              >
+                {sg.label}
+              </div>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: "#94a3b8",
+                  lineHeight: 1.4,
+                }}
+              >
+                {sg.desc}
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                flexShrink: 0,
+              }}
+            >
+              <span style={{ fontSize: 13, color: "#64748b" }}>{count}</span>
+              <svg
+                width={16}
+                height={16}
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="#64748b"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <polyline points="6 4 10 8 6 12" />
+              </svg>
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -1038,11 +1387,6 @@ function EmailModal({
   const [level, setLevel] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
 
   const handleSubmit = async () => {
     if (!email.trim() || !email.includes("@")) {
@@ -1140,12 +1484,12 @@ function EmailModal({
         )}
 
         <input
-          ref={inputRef}
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           placeholder="you@email.com"
+          autoFocus
           style={{
             width: "100%",
             padding: 14,
@@ -1227,11 +1571,45 @@ function EmailModal({
   );
 }
 
+// --- Breadcrumb Back Button ---
+function BackButton({ onClick, label }: { onClick: () => void; label?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        background: "none",
+        border: "none",
+        color: "#38bdf8",
+        fontSize: 14,
+        fontWeight: 500,
+        cursor: "pointer",
+        padding: 0,
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+      }}
+    >
+      <svg
+        width={16}
+        height={16}
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      >
+        <polyline points="10 12 6 8 10 4" />
+      </svg>
+      {label || "Back"}
+    </button>
+  );
+}
+
 // --- Main Page ---
 export default function Home() {
-  const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
+  const [activeSubgroup, setActiveSubgroup] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -1241,7 +1619,6 @@ export default function Home() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFavoritesSection, setShowFavoritesSection] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const unlocked = localStorage.getItem("prompt_vault_unlocked");
@@ -1283,10 +1660,31 @@ export default function Home() {
         setActiveCategory(found.category);
         const subs = SUBCATEGORIES[found.category] || [];
         const matchingSub = subs.find((s) => s.filter(found));
-        if (matchingSub) setActiveSubcategory(matchingSub.id);
+        if (matchingSub) {
+          setActiveSubcategory(matchingSub.id);
+          // If subgroups exist, find matching subgroup
+          if (matchingSub.subgroups) {
+            const matchingSubgroup = matchingSub.subgroups.find((sg) => sg.filter(found));
+            if (matchingSubgroup) setActiveSubgroup(matchingSubgroup.id);
+          }
+        }
         setExpandedId(found.id);
-        setQuery("");
         return;
+      }
+    }
+
+    // Handle /category/subcategory/subgroup style URLs
+    const catSubSubMatch = path.match(/^\/([^/]+)\/([^/]+)\/([^/]+)$/);
+    if (catSubSubMatch) {
+      const [, cat, sub, subgroup] = catSubSubMatch;
+      if (SUBCATEGORIES[cat]) {
+        const subObj = SUBCATEGORIES[cat].find((s) => s.id === sub);
+        if (subObj?.subgroups?.find((sg) => sg.id === subgroup)) {
+          setActiveCategory(cat);
+          setActiveSubcategory(sub);
+          setActiveSubgroup(subgroup);
+          return;
+        }
       }
     }
 
@@ -1299,7 +1697,6 @@ export default function Home() {
         if (subObj) {
           setActiveCategory(cat);
           setActiveSubcategory(sub);
-          setQuery("");
           return;
         }
       }
@@ -1312,7 +1709,6 @@ export default function Home() {
       if (SUBCATEGORIES[cat]) {
         setActiveCategory(cat);
         setActiveSubcategory(null);
-        setQuery("");
       }
     }
   }, []);
@@ -1322,20 +1718,14 @@ export default function Home() {
     window.history.pushState(null, "", path);
   }, []);
 
-  // Search results
-  const searchResults = useMemo(() => {
-    if (query.trim()) return searchPrompts(query);
-    return [];
-  }, [query]);
-
   // Subcategory results
   const subcategoryResults = useMemo(() => {
     if (!activeCategory || !activeSubcategory) return [];
     const subs = SUBCATEGORIES[activeCategory];
     const sub = subs?.find((s) => s.id === activeSubcategory);
     if (!sub) return [];
-    return getSubcategoryResults(sub);
-  }, [activeCategory, activeSubcategory]);
+    return getSubcategoryResults(sub, activeSubgroup || undefined);
+  }, [activeCategory, activeSubcategory, activeSubgroup]);
 
   // Recently used prompts
   const recentPrompts = useMemo(() => {
@@ -1351,20 +1741,10 @@ export default function Home() {
       .filter(Boolean) as Prompt[];
   }, [favorites]);
 
-  const handleSearch = useCallback((value: string) => {
-    setQuery(value);
-    if (value.trim()) {
-      setActiveCategory(null);
-      setActiveSubcategory(null);
-      pushEvent("search", { search_query: value });
-    }
-    updateUrl("/");
-  }, [updateUrl]);
-
   const handleQuickPick = useCallback((categoryId: string) => {
     setActiveCategory(categoryId);
     setActiveSubcategory(null);
-    setQuery("");
+    setActiveSubgroup(null);
     setExpandedId(null);
     pushEvent("search", { search_query: `quick_pick:${categoryId}` });
     updateUrl(`/${categoryId}`);
@@ -1373,6 +1753,7 @@ export default function Home() {
   const handleSubcategory = useCallback(
     (subId: string) => {
       setActiveSubcategory(subId);
+      setActiveSubgroup(null);
       setExpandedId(null);
       pushEvent("search", {
         search_query: `subcategory:${activeCategory}:${subId}`,
@@ -1382,18 +1763,34 @@ export default function Home() {
     [activeCategory, updateUrl]
   );
 
+  const handleSubgroup = useCallback(
+    (subgroupId: string) => {
+      setActiveSubgroup(subgroupId);
+      setExpandedId(null);
+      pushEvent("search", {
+        search_query: `subgroup:${activeCategory}:${activeSubcategory}:${subgroupId}`,
+      });
+      updateUrl(`/${activeCategory}/${activeSubcategory}/${subgroupId}`);
+    },
+    [activeCategory, activeSubcategory, updateUrl]
+  );
+
   const handleBack = useCallback(() => {
-    if (activeSubcategory) {
+    if (activeSubgroup) {
+      setActiveSubgroup(null);
+      setExpandedId(null);
+      updateUrl(`/${activeCategory}/${activeSubcategory}`);
+    } else if (activeSubcategory) {
       setActiveSubcategory(null);
+      setActiveSubgroup(null);
       setExpandedId(null);
       updateUrl(`/${activeCategory}`);
     } else {
       setActiveCategory(null);
-      setQuery("");
       setExpandedId(null);
       updateUrl("/");
     }
-  }, [activeSubcategory, activeCategory, updateUrl]);
+  }, [activeSubgroup, activeSubcategory, activeCategory, updateUrl]);
 
   const handleToggle = useCallback((promptId: string) => {
     setExpandedId((prev) => {
@@ -1469,16 +1866,18 @@ export default function Home() {
     const matchingSub = subs.find((s) => s.filter(prompt));
     if (matchingSub) {
       setActiveSubcategory(matchingSub.id);
+      if (matchingSub.subgroups) {
+        const matchingSubgroup = matchingSub.subgroups.find((sg) => sg.filter(prompt));
+        if (matchingSubgroup) setActiveSubgroup(matchingSubgroup.id);
+      }
     }
     setExpandedId(prompt.id);
     updateUrl(`/prompt/${prompt.id}`);
   }, [updateUrl]);
 
   // Determine what view to show
-  const isHome = !query.trim() && !activeCategory;
-  const isSearching = query.trim().length > 0;
+  const isHome = !activeCategory;
   const isPickingSubcategory = activeCategory && !activeSubcategory;
-  const isViewingPrompts = activeCategory && activeSubcategory;
 
   const currentQuickPick = QUICK_PICKS.find((q) => q.id === activeCategory);
   const currentSubcategories = activeCategory
@@ -1486,6 +1885,13 @@ export default function Home() {
     : [];
   const currentSubcategory = currentSubcategories.find(
     (s) => s.id === activeSubcategory
+  );
+
+  // Determine if we need to show subgroup picker
+  const needsSubgroupPicker = currentSubcategory?.subgroups && !activeSubgroup;
+  const isViewingPrompts = activeCategory && activeSubcategory && !needsSubgroupPicker;
+  const currentSubgroup = currentSubcategory?.subgroups?.find(
+    (sg) => sg.id === activeSubgroup
   );
 
   return (
@@ -1525,76 +1931,7 @@ export default function Home() {
           </p>
         </section>
 
-        {/* Search */}
-        <div style={{ position: "relative", marginBottom: 24 }}>
-          <svg
-            width={20}
-            height={20}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#64748b"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{
-              position: "absolute",
-              left: 16,
-              top: "50%",
-              transform: "translateY(-50%)",
-            }}
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={query}
-            onChange={(e) => handleSearch(e.target.value)}
-            placeholder="What do you need help with?"
-            style={{
-              width: "100%",
-              padding: "16px 16px 16px 48px",
-              fontSize: 16,
-              background: "rgba(255,255,255,0.06)",
-              border: "2px solid rgba(255,255,255,0.08)",
-              borderRadius: 14,
-              color: "#f1f5f9",
-              outline: "none",
-              transition: "border-color 0.2s",
-            }}
-            onFocus={(e) =>
-              (e.target.style.borderColor = "rgba(56,189,248,0.4)")
-            }
-            onBlur={(e) =>
-              (e.target.style.borderColor = "rgba(255,255,255,0.08)")
-            }
-          />
-          {query && (
-            <button
-              onClick={() => {
-                setQuery("");
-                searchInputRef.current?.focus();
-              }}
-              style={{
-                position: "absolute",
-                right: 12,
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "none",
-                border: "none",
-                color: "#64748b",
-                cursor: "pointer",
-                padding: 4,
-                fontSize: 18,
-              }}
-            >
-              x
-            </button>
-          )}
-        </div>
-
-        {/* HOME: Onboarding + Quick Picks + Before/After + Recently Used + Favorites */}
+        {/* HOME: Onboarding + Quick Picks + Before/After + Favorites + Recently Used */}
         {isHome && (
           <section className="fade-in">
             {/* Onboarding Banner */}
@@ -1816,99 +2153,6 @@ export default function Home() {
           </section>
         )}
 
-        {/* SEARCH RESULTS */}
-        {isSearching && (
-          <section>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                marginBottom: 16,
-              }}
-            >
-              <button
-                onClick={() => {
-                  setQuery("");
-                  searchInputRef.current?.focus();
-                  updateUrl("/");
-                }}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#38bdf8",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  padding: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                }}
-              >
-                <svg
-                  width={16}
-                  height={16}
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                >
-                  <polyline points="10 12 6 8 10 4" />
-                </svg>
-                Back
-              </button>
-              <span style={{ fontSize: 14, color: "#94a3b8" }}>
-                {searchResults.length} result
-                {searchResults.length !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
-              </span>
-            </div>
-
-            <DifficultyLegend />
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                paddingBottom: 48,
-                marginTop: 12,
-              }}
-            >
-              {searchResults.length === 0 && (
-                <div
-                  style={{
-                    textAlign: "center",
-                    padding: "48px 24px",
-                    color: "#64748b",
-                  }}
-                >
-                  <p style={{ fontSize: 16, marginBottom: 8 }}>
-                    No prompts found for &ldquo;{query}&rdquo;
-                  </p>
-                  <p style={{ fontSize: 14 }}>
-                    Try keywords like &ldquo;listing description&rdquo; or
-                    &ldquo;follow-up email&rdquo;
-                  </p>
-                </div>
-              )}
-              {searchResults.map((p) => (
-                <PromptCard
-                  key={p.id}
-                  prompt={p}
-                  isExpanded={expandedId === p.id}
-                  onToggle={() => handleToggle(p.id)}
-                  onCopy={handleCopy}
-                  isFavorited={favorites.includes(p.id)}
-                  onToggleFavorite={handleToggleFavorite}
-                  onNavigateToPrompt={handleNavigateToPrompt}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
         {/* SUBCATEGORY PICKER */}
         {isPickingSubcategory && (
           <section className="fade-in">
@@ -1920,34 +2164,7 @@ export default function Home() {
                 marginBottom: 20,
               }}
             >
-              <button
-                onClick={handleBack}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#38bdf8",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  padding: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                }}
-              >
-                <svg
-                  width={16}
-                  height={16}
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                >
-                  <polyline points="10 12 6 8 10 4" />
-                </svg>
-                Back
-              </button>
+              <BackButton onClick={handleBack} />
               <span style={{ fontSize: 14, color: "#94a3b8" }}>
                 {currentQuickPick?.label}
               </span>
@@ -2061,7 +2278,50 @@ export default function Home() {
           </section>
         )}
 
-        {/* PROMPT LIST (after subcategory selected) */}
+        {/* SUBGROUP PICKER (third level) */}
+        {needsSubgroupPicker && currentSubcategory && (
+          <section className="fade-in">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 20,
+                flexWrap: "wrap",
+              }}
+            >
+              <BackButton onClick={handleBack} />
+              <span style={{ fontSize: 13, color: "#475569" }}>/</span>
+              <span style={{ fontSize: 14, color: "#64748b" }}>
+                {currentQuickPick?.label}
+              </span>
+              <span style={{ fontSize: 13, color: "#475569" }}>/</span>
+              <span style={{ fontSize: 14, color: "#94a3b8" }}>
+                {currentSubcategory.label}
+              </span>
+            </div>
+
+            <h2
+              className={spaceGrotesk.className}
+              style={{
+                fontSize: 20,
+                fontWeight: 600,
+                color: "#f1f5f9",
+                marginBottom: 16,
+              }}
+            >
+              Narrow it down
+            </h2>
+
+            <SubgroupPicker
+              subcategory={currentSubcategory}
+              parentFilter={currentSubcategory.filter}
+              onSelect={handleSubgroup}
+            />
+          </section>
+        )}
+
+        {/* PROMPT LIST */}
         {isViewingPrompts && (
           <section className="fade-in">
             <div
@@ -2073,42 +2333,23 @@ export default function Home() {
                 flexWrap: "wrap",
               }}
             >
-              <button
-                onClick={handleBack}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#38bdf8",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  padding: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                }}
-              >
-                <svg
-                  width={16}
-                  height={16}
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                >
-                  <polyline points="10 12 6 8 10 4" />
-                </svg>
-                Back
-              </button>
+              <BackButton onClick={handleBack} />
               <span style={{ fontSize: 13, color: "#475569" }}>/</span>
               <span style={{ fontSize: 14, color: "#64748b" }}>
                 {currentQuickPick?.label}
               </span>
               <span style={{ fontSize: 13, color: "#475569" }}>/</span>
-              <span style={{ fontSize: 14, color: "#94a3b8" }}>
+              <span style={{ fontSize: 14, color: currentSubgroup ? "#64748b" : "#94a3b8" }}>
                 {currentSubcategory?.label}
               </span>
+              {currentSubgroup && (
+                <>
+                  <span style={{ fontSize: 13, color: "#475569" }}>/</span>
+                  <span style={{ fontSize: 14, color: "#94a3b8" }}>
+                    {currentSubgroup.label}
+                  </span>
+                </>
+              )}
               <span style={{ fontSize: 13, color: "#475569", marginLeft: "auto" }}>
                 {subcategoryResults.length} prompt
                 {subcategoryResults.length !== 1 ? "s" : ""}
