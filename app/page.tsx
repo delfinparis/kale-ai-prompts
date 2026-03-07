@@ -71,26 +71,27 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
   write: [
     {
       id: "listing-desc",
-      label: "Listing Descriptions",
-      desc: "MLS, luxury, condo, investment, price reduction",
+      label: "Listing Descriptions & Marketing",
+      desc: "MLS copy, social posts, emails, flyers, video scripts",
       featured: ["ch6-6.1", "ch6-6.2", "ch6-6.3"],
       filter: (p) =>
         p.category === "write" &&
-        /listing|mls|description|luxury listing|condo|investment property|price reduction|zillow|property description|townhome|short sale|multi-family/i.test(
-          p.title
-        ),
+        (p.chapter === 6 ||
+          /listing|mls|description|luxury listing|condo|investment property|price reduction|zillow|property description|townhome|short sale|multi-family|comparative market|neighborhood feature|withdrawn/i.test(
+            p.title
+          )),
       subgroups: [
         {
           id: "mls-descriptions",
           label: "MLS Descriptions",
           desc: "Standard, luxury, condo, land, investment",
-          filter: (p) => /mls|description|luxury property|starter home|condo|townhouse|vacant land|investment property/i.test(p.title),
+          filter: (p) => /mls|description|luxury property|starter home|condo|townhouse|vacant land|investment property|rewriter|write better listing|comparative market|neighborhood feature/i.test(p.title),
         },
         {
           id: "listing-social",
           label: "Listing Social Posts",
-          desc: "New listing, just sold, coming soon, price improvement",
-          filter: (p) => /announcement|just sold|coming soon|teaser|open house promotion|price improvement/i.test(p.title),
+          desc: "New listing, just sold, coming soon, price updates",
+          filter: (p) => /announcement|just sold|coming soon|teaser|open house promotion|price improvement|price reduction.*social|new listing.*post|recap/i.test(p.title),
         },
         {
           id: "listing-emails",
@@ -100,20 +101,20 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
         },
         {
           id: "listing-marketing",
-          label: "Marketing Materials",
+          label: "Marketing Materials & Scripts",
           desc: "Flyers, brochures, video scripts, launch plans",
-          filter: (p) => /flyer|brochure|video|walkthrough|narration|launch|strategy|stale|refresh|presentation|pitch|withdrawn|post-closing|comparative|neighborhood feature/i.test(p.title),
+          filter: (p) => /flyer|brochure|video|walkthrough|narration|launch|strategy|stale|refresh|presentation|pitch|withdrawn|post-closing|property brochure/i.test(p.title),
         },
       ],
     },
     {
       id: "emails-letters",
-      label: "Emails & Letters",
-      desc: "Thank-you, intro, neighborhood, event invites",
-      featured: ["ch4-1", "ch4-2", "ch4-3"],
+      label: "Emails, Letters & Templates",
+      desc: "Thank-you, intro, follow-up texts, response templates",
+      featured: ["ch0-1", "ch0-5", "ch0-9"],
       filter: (p) =>
         p.category === "write" &&
-        /email|letter|thank|intro|invitation|invite|welcome|congratulat|announcement|neighborhood intro|door knock|moving checklist|event/i.test(
+        /email|letter|thank|intro|invitation|invite|welcome|congratulat|announcement|neighborhood intro|door knock|moving checklist|event|texts|text message|personalized.*follow-up|speed-to-lead|response template|wake up.*dead leads/i.test(
           p.title
         ),
     },
@@ -121,21 +122,21 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       id: "social-content",
       label: "Social Media & Content",
       desc: "Posts, reels, stories, content calendar",
-      featured: ["ch0-2", "ch0-3", "ch4-31"],
+      featured: ["ch0-2", "ch0-3", "ch0-4"],
       filter: (p) =>
         p.category === "write" &&
-        /social|post|reel|story|stories|content|calendar|instagram|facebook|caption|video|tiktok|youtube|poll|carousel/i.test(
+        /social|post|reel|story|stories|content|calendar|instagram|facebook|caption|video|tiktok|youtube|poll|carousel|conversation starters|neighborhood intel/i.test(
           p.title
         ),
     },
     {
       id: "marketing-copy",
-      label: "Marketing & Ad Copy",
-      desc: "Flyers, brochures, ads, SEO, landing pages",
-      featured: ["ch4-35", "ch4-36", "ch4-37"],
+      label: "Marketing, Ads & Guides",
+      desc: "Ad copy, SEO, landing pages, lead magnets, reports",
+      featured: ["ch2-42", "ch1-33", "ch1-5"],
       filter: (p) =>
         p.category === "write" &&
-        /flyer|brochure|launch|script|narration|ad copy|landing page|seo|blog|content calendar|brand voice|market update|guide/i.test(
+        /flyer|brochure|launch|script|narration|ad copy|landing page|seo|blog|brand voice|market update|guide|market comparison|lead magnet promotion|swipe file|performance review|countdown checklist|roleplay/i.test(
           p.title
         ),
     },
@@ -148,18 +149,18 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch3-2", "ch3-1", "ch3-3"],
       filter: (p) =>
         p.category === "followup" &&
-        /showing|debrief|post-showing|they loved|undecided|didn't like|criteria/i.test(
+        /showing|debrief|post-showing|they loved|undecided|didn't like|criteria|post-price-reduction|seller check-in/i.test(
           p.title
         ),
     },
     {
       id: "cold-leads",
       label: "Cold & Dead Leads",
-      desc: "Reactivation, re-engagement, dormant contacts",
+      desc: "Reactivation, re-engagement, prospecting, expired",
       featured: ["ch3-46", "ch3-45", "ch3-40"],
       filter: (p) =>
         p.category === "followup" &&
-        /cold|dead|dormant|reactivat|re-engage|silent|ghost|lost|break-up|recovery|trigger event|hidden opportunity|purge/i.test(
+        /cold|dead|dormant|reactivat|re-engage|silent|ghost|lost|break-up|recovery|trigger event|hidden opportunity|purge|chose another agent|quick-question|re-opener|expired listing|lead qualification|database audit|segmentation plan/i.test(
           p.title + " " + p.bestFor
         ),
     },
@@ -170,38 +171,38 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch3-23", "ch3-13", "ch3-22"],
       filter: (p) =>
         p.category === "followup" &&
-        /past client|referral|nurture|milestone|anniversary|sphere|soi|closing|appreciation|pop-by|home value|touchpoint|top of mind|thought of you|maintenance|personalized|intelligence profile|communication preference/i.test(
+        /past client|referral|nurture|milestone|anniversary|sphere|soi|closing|appreciation|pop-by|home value|touchpoint|top of mind|thought of you|maintenance|personalized|intelligence profile|communication preference|natural conversation|voice note|post-transaction|same-message|different-styles|personality-based|personality type|assessment guide/i.test(
           p.title + " " + p.bestFor
         ),
       subgroups: [
         {
           id: "client-intel",
           label: "Client Intelligence",
-          desc: "Profiles, preferences, personalization",
-          filter: (p) => /intelligence|preference|personalized|personality|saw this|thought of you|adapter/i.test(p.title),
+          desc: "Profiles, preferences, personality-based follow-up",
+          filter: (p) => /intelligence|preference|personalized|personality|saw this|thought of you|adapter|same-message|different-styles|natural conversation|assessment guide|network architecture/i.test(p.title),
         },
         {
           id: "stay-in-touch",
           label: "Stay-in-Touch Messages",
           desc: "Milestones, home value updates, pop-bys",
-          filter: (p) => /milestone|home value|maintenance|pop-by|top of mind|touchpoint|voice note|market update/i.test(p.title),
+          filter: (p) => /milestone|home value|maintenance|pop-by|top of mind|touchpoint|voice note|market update|post-transaction|nurture drip|nurture plan|drip campaign|closing conversation|post-open-house text/i.test(p.title),
         },
         {
           id: "referral-asks",
           label: "Referral Asks & Thank-Yous",
           desc: "Non-cringe referral scripts, appreciation",
-          filter: (p) => /referral|thank-you|appreciation|event invitation/i.test(p.title),
+          filter: (p) => /referral|thank-you|appreciation|event invitation|nurture sequence|touchpoint calendar|soi|sphere of influence|outreach system|power partner breakfast|joint client education/i.test(p.title),
         },
       ],
     },
     {
       id: "drip-sequences",
-      label: "Email Drip Campaigns",
-      desc: "Buyer, seller, past client, and cold lead sequences",
+      label: "Email Drip Campaigns & Automation",
+      desc: "Sequences, CRM workflows, automation rules",
       featured: ["ch3-37", "ch3-38", "ch3-39"],
       filter: (p) =>
         p.category === "followup" &&
-        /drip|sequence|email.*campaign|subject line|automation|multi-channel|channel selection|escalation|critical moment|quarterly.*assessment|engagement signal|frequency matrix|send guide/i.test(
+        /drip|sequence|email.*campaign|subject line|automation|multi-channel|channel selection|escalation|critical moment|quarterly.*assessment|engagement signal|frequency matrix|send guide|crm|action plan|sounds human/i.test(
           p.title
         ),
       subgroups: [
@@ -209,19 +210,19 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
           id: "drip-campaigns",
           label: "Drip Campaigns",
           desc: "Buyer, seller, past client, cold lead sequences",
-          filter: (p) => /drip|campaign|sequence|subject line/i.test(p.title),
+          filter: (p) => /drip|campaign|sequence|subject line|action plan/i.test(p.title),
         },
         {
           id: "automation-rules",
-          label: "Automation & Systems",
+          label: "Automation & CRM Systems",
           desc: "CRM workflows, pause rules, multi-channel",
-          filter: (p) => /automat|multi-channel|channel selection|escalation|critical moment|frequency|engagement signal|send guide|quarterly|sounds human/i.test(p.title),
+          filter: (p) => /automat|multi-channel|channel selection|escalation|critical moment|frequency|engagement signal|send guide|quarterly|sounds human|crm|optimize|data cleanup|workflow/i.test(p.title),
         },
       ],
     },
     {
       id: "open-house-fu",
-      label: "Open House Follow-Up",
+      label: "Open House",
       desc: "Planning, scripts, staging, objection handling",
       featured: ["ch4-43", "ch4-44", "ch4-45"],
       filter: (p) =>
@@ -237,7 +238,7 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
           id: "oh-promotion",
           label: "Promotion & Marketing",
           desc: "Social posts, emails, door knocks, video",
-          filter: (p) => /instagram|facebook|stories|countdown|video|reels|tiktok|email.*angle|door-knock|nextdoor|event page|checklist.*14/i.test(p.title),
+          filter: (p) => /instagram|facebook|stories|countdown|video|reels|tiktok|email.*angle|door-knock|nextdoor|event page|checklist|14-day/i.test(p.title),
         },
         {
           id: "oh-staging",
@@ -248,8 +249,8 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
         {
           id: "oh-scripts",
           label: "Talking Points & Scripts",
-          desc: "Greeting, qualifying, lifestyle stories",
-          filter: (p) => /talking point|lifestyle|neighborhood pitch|brochure|comparable|greeting|qualifying|conversation|engagement|closing conversation|exit|recovery|awkward|first-time buyer.*guide|investor.*guide|neighbor.*guide|represented|move-up|downsizer/i.test(p.title),
+          desc: "Greeting, qualifying, lifestyle stories, conversations",
+          filter: (p) => /talking point|lifestyle|neighborhood pitch|brochure|comparable|greeting|qualifying|conversation|engagement|closing conversation|exit|recovery|awkward|first-time buyer.*guide|investor.*guide|neighbor.*guide|represented|move-up|downsizer|renovation potential|immediate post-open/i.test(p.title),
         },
         {
           id: "oh-objections",
@@ -260,8 +261,8 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
         {
           id: "oh-capture",
           label: "Lead Capture & Follow-Up",
-          desc: "Sign-in, texts, post-event processing",
-          filter: (p) => /sign-in|text for detail|post-event|data processing|incentive|scorecard|performance|content captured|recap/i.test(p.title),
+          desc: "Sign-in, resistant visitors, post-event processing",
+          filter: (p) => /sign-in|resistant visitor|text for detail|post-event|data processing|incentive|scorecard|performance|content captured|recap/i.test(p.title),
         },
       ],
     },
@@ -295,7 +296,7 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
           id: "net-partners",
           label: "Referral Partners",
           desc: "Outreach, coffee meetings, joint events",
-          filter: (p) => /referral partner|first outreach|coffee meeting|value i bring|thank-you|agent-to-agent|power partner|joint client|annual partner|appreciation/i.test(p.title),
+          filter: (p) => /referral partner|first outreach|coffee meeting|value i bring|thank-you|agent-to-agent|power partner|joint client|annual partner|appreciation|design a monthly/i.test(p.title),
         },
         {
           id: "net-linkedin",
@@ -320,7 +321,7 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch8-1", "ch8-3", "ch8-4"],
       filter: (p) =>
         p.category === "coach" &&
-        /listing|seller|fsbo|expired|overprice|palace|spring|commission|discount broker/i.test(
+        /listing|seller|fsbo|expired|overprice|palace|spring|commission|discount broker|training material/i.test(
           p.title
         ),
     },
@@ -342,7 +343,7 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch7-1", "ch7-2", "ch7-4"],
       filter: (p) =>
         p.category === "coach" &&
-        /offer|counter|appraisal|inspection|repair|cash|negotiat|net sheet|multi-offer|below-asking|walk-away|price reduction|worth what|overprice.*50|comparing.*offers|best and final/i.test(
+        /offer|counter|appraisal|inspection|repair|cash|negotiat|net sheet|multi-offer|below-asking|walk-away|price reduction|worth what|overprice.*50|comparing.*offers|best and final|presenting multiple/i.test(
           p.title
         ),
       subgroups: [
@@ -350,7 +351,7 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
           id: "neg-offers",
           label: "Making & Winning Offers",
           desc: "Compelling offers, multi-offer, cash competition",
-          filter: (p) => /compelling offer|multi-offer|below-asking|competing against|best and final|positioning/i.test(p.title),
+          filter: (p) => /compelling offer|multi-offer|below-asking|competing against|best and final|positioning|presenting multiple/i.test(p.title),
         },
         {
           id: "neg-inspections",
@@ -369,7 +370,7 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
     {
       id: "tough-convos",
       label: "Tough Conversations",
-      desc: "Commission talks, firing clients, delays",
+      desc: "Commission talks, firing clients, delays, transactions",
       featured: ["ch7-21", "ch7-26", "ch7-15"],
       filter: (p) =>
         p.category === "coach" &&
@@ -420,7 +421,7 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch1-1", "ch1-2", "ch1-10"],
       filter: (p) =>
         p.category === "strategy" &&
-        /prompt|ai |negative prompting|few-shot|chain-of-thought|iterative|formatting|output|swipe file|brand voice|disclosure|implementation roadmap/i.test(
+        /prompt|ai |negative prompting|few-shot|chain-of-thought|iterative|formatting|output|swipe file|brand voice|disclosure|implementation roadmap|plain language|complex.*concept/i.test(
           p.title
         ),
     },
@@ -473,11 +474,11 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
     {
       id: "workflows",
       label: "Daily Workflows & Systems",
-      desc: "Routines, CRM, automation, checklists",
+      desc: "Routines, CRM, compliance, checklists, team tools",
       featured: ["ch1-11", "ch1-12", "ch1-13"],
       filter: (p) =>
         p.category === "strategy" &&
-        /workflow|routine|morning|admin|automat|checklist|crm|task|decision|end-of-day|wrap-up|meeting prep|tech stack|delegation|team|communication hub|review|client meeting/i.test(
+        /workflow|routine|morning|admin|automat|checklist|crm|task|decision|end-of-day|wrap-up|meeting prep|tech stack|delegation|team|communication hub|review|client meeting|template.*sound|professional response|difficult client|documentation|contract review|crisis|training material|scorecard|open house scorecard|roi tracker|introverts|reverse referral|connector reputation|relationship depth|segmentation.*referral/i.test(
           p.title
         ),
     },
@@ -488,29 +489,18 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       featured: ["ch1-28", "ch1-29", "ch1-30"],
       filter: (p) =>
         p.category === "strategy" &&
-        /neighborhood deep|data-driven|cma|market predict|seasonal market|property search|showing prep|competitive offer strategy/i.test(
+        /neighborhood deep|data-driven|cma|market predict|seasonal market|property search|showing prep|competitive offer strategy|market comparison/i.test(
           p.title
         ),
     },
     {
       id: "content-mktg",
       label: "Content & Marketing Strategy",
-      desc: "Calendars, brand, SEO, video, repurposing",
+      desc: "Calendars, brand, SEO, video, education, FAQs",
       featured: ["ch1-36", "ch1-35", "ch1-37"],
       filter: (p) =>
         p.category === "strategy" &&
         /content|calendar|brand|seo|video|repurpos|market update|blog|newsletter|visual explainer|first-time buyer.*email|seller preparation|faq|objection-response|success story/i.test(
-          p.title
-        ),
-    },
-    {
-      id: "compliance",
-      label: "Compliance & Risk",
-      desc: "AI disclosure, documentation, contract review, crisis",
-      featured: ["ch1-50", "ch1-51", "ch1-52"],
-      filter: (p) =>
-        p.category === "strategy" &&
-        /disclosure|documentation|contract review|crisis|fair housing|risk/i.test(
           p.title
         ),
     },
@@ -1993,6 +1983,16 @@ export default function Home() {
                     style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.4 }}
                   >
                     {qp.desc}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: "#38bdf8",
+                      marginTop: 6,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {prompts.filter((p) => p.category === qp.id).length} prompts
                   </div>
                 </button>
               ))}
