@@ -956,10 +956,10 @@ export default function Home() {
               letterSpacing: "-0.02em",
             }}
           >
-            Tell us what you need.
+            Your AI Cheat Sheet
             <br />
             <span style={{ color: "#38bdf8" }}>
-              Get copy-paste-ready AI scripts in seconds.
+              for Real Estate
             </span>
           </h1>
           <p
@@ -970,8 +970,8 @@ export default function Home() {
               marginBottom: 32,
             }}
           >
-            400+ templates built for working real estate agents. Works with
-            ChatGPT, Claude, or any AI tool.
+            400+ copy-paste prompts that write your emails, listings,
+            follow-ups, and scripts — so you don&apos;t have to.
           </p>
         </section>
 
