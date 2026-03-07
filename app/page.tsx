@@ -959,7 +959,7 @@ export default function Home() {
             Your AI Cheat Sheet
             <br />
             <span style={{ color: "#38bdf8" }}>
-              for Real Estate
+              for Real Estate Agents
             </span>
           </h1>
           <p
