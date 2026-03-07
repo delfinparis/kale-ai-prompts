@@ -790,7 +790,96 @@ function DifficultyLegend() {
   );
 }
 
+const BEFORE_AFTERS = [
+  {
+    before: "Hi, just checking in to see if you\u2019re still interested in buying a home. Let me know if you have any questions!",
+    after: "Sarah, last time we chatted you were debating between Lincoln Park and Lakeview \u2014 did that new coffee shop on Armitage tip the scales? I just listed a 2BR that checks every box you mentioned. Worth a peek?",
+  },
+  {
+    before: "Beautiful 3BR/2BA home for sale. Great location, move-in ready. Call for details!",
+    after: "Wake up to morning light flooding your chef\u2019s kitchen while the kids walk two blocks to Lincoln Elementary. This 3BR/2BA on tree-lined Maple Ave was renovated in 2024 with quartz counters, white oak floors, and a backyard built for summer BBQs. Open house Saturday 1\u20133.",
+  },
+  {
+    before: "Thanks for coming to the open house today! Let me know if you have any questions about the property.",
+    after: "Great meeting you today, Mike! You mentioned wanting a bigger backyard for your golden retriever \u2014 this home\u2019s half-acre lot is fully fenced. I pulled two more listings nearby with similar yards. Want me to send them over?",
+  },
+  {
+    before: "Just wanted to follow up from our showing last week. Are you still interested?",
+    after: "Hey David \u2014 that Craftsman on Elm we toured last Thursday just had a price drop of $15K. You mentioned it was your favorite layout but the price felt high. Want to take another look before the weekend rush?",
+  },
+  {
+    before: "I hope you\u2019re enjoying your new home! Let me know if you ever need anything.",
+    after: "Happy 1-year homeiversary, Jen! Your neighborhood just saw a 6% increase in values since you bought \u2014 great timing. I put together a quick equity snapshot for you. Also, my painter just finished a job on your street and has openings \u2014 want his number?",
+  },
+  {
+    before: "I\u2019m a local real estate agent. If you or anyone you know is looking to buy or sell, please keep me in mind!",
+    after: "I helped 3 families on your street find their homes last year. Your neighbor on Maple just got $40K over asking using my pre-listing renovation strategy. I\u2019d love to share what I\u2019m seeing in your micro-market \u2014 coffee on me?",
+  },
+  {
+    before: "The inspection report came back with some issues. Let\u2019s discuss.",
+    after: "Great news \u2014 the inspection found mostly cosmetic items. The two things worth discussing: the water heater is 12 years old (avg lifespan is 10\u201315) and there\u2019s minor grading near the foundation. I\u2019ve already gotten repair estimates for both. Here\u2019s my recommendation for the repair request\u2026",
+  },
+  {
+    before: "Your home has been on the market for 30 days. We should talk about a price reduction.",
+    after: "Here\u2019s your 30-day market report: 847 views online, 12 showings, 3 second showings, 0 offers. The feedback trend is clear \u2014 buyers love the kitchen but feel the price is $20\u201325K above comparable sales. A strategic adjustment to $475K would put us in the sweet spot. Here\u2019s why\u2026",
+  },
+  {
+    before: "Do you have any referrals for me? I\u2019d really appreciate it!",
+    after: "Lisa, remember when you told me your coworker was thinking about downsizing? I just listed a low-maintenance condo that might be perfect for her situation. Would it be weird if I reached out, or would you rather make the intro?",
+  },
+  {
+    before: "I\u2019m reaching out to see if you\u2019re interested in selling your home.",
+    after: "Your home on Oak Street is one of 3 mid-century ranches in the neighborhood \u2014 and the other two sold for $50K more than expected this spring. I ran a quick analysis on yours. Even with zero updates, you\u2019re sitting on significant equity. Curious what the number looks like?",
+  },
+  {
+    before: "Here\u2019s a new listing I thought you might like. 4BR, 3BA, $550K.",
+    after: "Remember your wish list? Big kitchen, walkable to school, under $575K. This one just hit the market 20 minutes ago: 4BR/3BA with a 15-foot island, 3 blocks from Roosevelt Elementary, listed at $550K. The seller is motivated and accepting showings starting tomorrow. Want the first slot?",
+  },
+  {
+    before: "I know you said you\u2019re not ready to buy yet, but the market is really good right now.",
+    after: "No rush at all, Maria \u2014 but I wanted to flag something. Rates just dipped to 6.2% this week, which drops your monthly payment by $180 vs. last month. At your price range, that\u2019s $65K more buying power. I set up a saved search so you\u2019ll see anything that hits before the weekend crowd.",
+  },
+  {
+    before: "We got multiple offers on your listing. Let\u2019s talk.",
+    after: "Exciting news \u2014 5 offers came in, ranging from $485K to $520K. I\u2019ve built a side-by-side comparison covering price, contingencies, closing timeline, financing strength, and escalation clauses. Two stand out for different reasons. Let\u2019s hop on a call at 4pm to walk through your options.",
+  },
+  {
+    before: "Happy holidays from your favorite Realtor! Hope you have a great year!",
+    after: "Tom, I know you mentioned wanting to build a deck last spring \u2014 my contractor just finished one similar to what you described and has a winter discount. Also, your neighborhood appreciation is up 8% this year. I\u2019ll drop off your annual home equity report next week \u2014 the numbers will make you smile.",
+  },
+  {
+    before: "Check out my new listing! Great home in a great neighborhood!",
+    after: "POV: You\u2019re sipping coffee on this wraparound porch while your kids ride bikes on the quietest cul-de-sac in Westfield. 4 beds, a home office with built-ins, and a backyard with a firepit that\u2019s hosted 100+ neighborhood s\u2019mores nights. Open house Sunday 12\u20132. Link in bio.",
+  },
+  {
+    before: "I\u2019d love to help you sell your home. I have a lot of experience in the area.",
+    after: "In the last 12 months, I\u2019ve sold 8 homes within a mile of yours \u2014 averaging 4.2% over asking and 11 days on market. My pre-listing prep process (staging, photography, pricing strategy) is why my sellers net $23K more on average. Want me to walk you through exactly what I\u2019d do for your home?",
+  },
+  {
+    before: "Sorry to hear the appraisal came in low. Let\u2019s figure out what to do.",
+    after: "The appraisal came in at $465K vs. our $485K contract price. Before we panic: I\u2019ve already pulled 3 comparable sales the appraiser missed and drafted a rebuttal with supporting data. Option A: challenge the appraisal. Option B: split the difference. Option C: renegotiate. Here\u2019s my recommendation\u2026",
+  },
+  {
+    before: "I haven\u2019t heard from you in a while. Are you still looking to buy?",
+    after: "Hey Chris \u2014 I just drove past that Tudor on Park Ave you were obsessed with 6 months ago. Still there, and they just dropped the price 12%. Totally understand if your plans changed, but if the timing is better now, I can get us in this weekend before it gets picked up.",
+  },
+  {
+    before: "Just listed! Contact me for more information about this property.",
+    after: "JUST LISTED: The kitchen that made 3 contractors say \u201Cwhoever did this knew what they were doing.\u201D This 1920s brick colonial got a top-to-bottom renovation with original details preserved \u2014 crown molding, hardwood, arched doorways \u2014 plus a chef\u2019s kitchen with La Cornue range. First showing block is Friday.",
+  },
+  {
+    before: "I\u2019m a new agent but I\u2019m really passionate about real estate!",
+    after: "I may be newer to real estate, but here\u2019s what I bring: I respond to every inquiry within 5 minutes, I\u2019ve completed 60+ hours of negotiation training, and I\u2019m backed by a team that\u2019s closed 200+ transactions. My clients get senior-level strategy with someone who will outwork everyone. Let me prove it.",
+  },
+];
+
 function BeforeAfterExample() {
+  const [example, setExample] = useState(BEFORE_AFTERS[0]);
+
+  useEffect(() => {
+    setExample(BEFORE_AFTERS[Math.floor(Math.random() * BEFORE_AFTERS.length)]);
+  }, []);
+
   return (
     <div
       style={{
@@ -840,8 +929,7 @@ function BeforeAfterExample() {
               fontStyle: "italic",
             }}
           >
-            &ldquo;Hi, just checking in to see if you&apos;re still interested
-            in buying a home. Let me know if you have any questions!&rdquo;
+            &ldquo;{example.before}&rdquo;
           </div>
         </div>
         <div style={{ textAlign: "center" }}>
@@ -883,10 +971,7 @@ function BeforeAfterExample() {
               fontStyle: "italic",
             }}
           >
-            &ldquo;Sarah, last time we chatted you were debating between Lincoln
-            Park and Lakeview — did that new coffee shop on Armitage tip the
-            scales? I just listed a 2BR that checks every box you mentioned.
-            Worth a peek?&rdquo;
+            &ldquo;{example.after}&rdquo;
           </div>
         </div>
       </div>
