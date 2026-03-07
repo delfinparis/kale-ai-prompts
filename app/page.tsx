@@ -65,38 +65,40 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
       id: "listing-desc",
       label: "Listing Descriptions",
       desc: "MLS, luxury, condo, investment, price reduction",
-      featured: ["ch6-6.1", "ch6-6.2", "ch6-6.3"],
+      featured: ["ch6-1", "ch6-2", "ch6-3"],
       filter: (p) =>
         p.category === "write" &&
-        /listing description|mls|property description|luxury property|starter home|condo|townhouse|vacant land|price reduction|investment property/i.test(
-          p.title + " " + p.prompt
+        /listing|mls|description|luxury listing|condo|investment property|price reduction|zillow|property description|townhome|short sale|multi-family/i.test(
+          p.title
         ),
     },
     {
-      id: "social-media",
-      label: "Social Media Posts",
-      desc: "Announcements, neighborhood posts, recaps",
-      featured: ["ch0-2", "ch6-6.7", "ch6-6.8"],
+      id: "emails-letters",
+      label: "Emails & Letters",
+      desc: "Thank-you, intro, neighborhood, event invites",
+      featured: ["ch4-1", "ch4-2", "ch4-3"],
       filter: (p) =>
         p.category === "write" &&
-        /social media|instagram|facebook|post |carousel|just sold|coming soon|recap|video walkthrough|video script/i.test(
-          p.title + " " + p.prompt
+        /email|letter|thank|intro|invitation|invite|welcome|congratulat|announcement|neighborhood intro|door knock|moving checklist|event/i.test(
+          p.title
         ),
     },
     {
-      id: "emails",
-      label: "Email Campaigns",
-      desc: "Blasts, drips, newsletters, sequences",
-      featured: ["ch6-6.13", "ch6-6.15", "ch6-6.17"],
+      id: "social-content",
+      label: "Social Media & Content",
+      desc: "Posts, reels, stories, content calendar",
+      featured: ["ch0-2", "ch0-3", "ch4-31"],
       filter: (p) =>
         p.category === "write" &&
-        /email|newsletter|blast|drip|sequence/i.test(p.title),
+        /social|post|reel|story|stories|content|calendar|instagram|facebook|caption|video|tiktok|youtube|poll|carousel/i.test(
+          p.title
+        ),
     },
     {
-      id: "marketing",
-      label: "Marketing Materials",
-      desc: "Flyers, brochures, scripts, launch plans",
-      featured: ["ch6-6.19", "ch6-6.23", "ch6-6.25"],
+      id: "marketing-copy",
+      label: "Marketing & Ad Copy",
+      desc: "Flyers, brochures, ads, SEO, landing pages",
+      featured: ["ch4-35", "ch4-36", "ch4-37"],
       filter: (p) =>
         p.category === "write" &&
         /flyer|brochure|launch|script|narration|ad copy|landing page|seo|blog|content calendar|brand voice|market update|guide/i.test(
@@ -252,6 +254,40 @@ const DIFFICULTY_COLORS: Record<string, string> = {
   advanced: "#ef4444",
 };
 
+const DIFFICULTY_LABELS: Record<string, string> = {
+  beginner: "Beginner",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+};
+
+// Variable examples for richer bracket hints
+const VARIABLE_EXAMPLES: Record<string, string> = {
+  "YOUR NAME": "e.g., Sarah Johnson",
+  "YOUR BROKERAGE": "e.g., Keller Williams Realty",
+  "CLIENT NAME": "e.g., John & Maria Chen",
+  "PROPERTY ADDRESS": "e.g., 742 Evergreen Terrace, Springfield",
+  "NEIGHBORHOOD": "e.g., Lincoln Park",
+  "CITY": "e.g., Chicago, IL",
+  "PRICE": "e.g., $425,000",
+  "ASKING PRICE": "e.g., $525,000",
+  "LIST PRICE": "e.g., $399,900",
+  "BEDROOMS": "e.g., 3",
+  "BATHROOMS": "e.g., 2",
+  "SQUARE FOOTAGE": "e.g., 1,850 sq ft",
+  "PROPERTY TYPE": "e.g., single-family home, condo, townhome",
+  "BUYER NAME": "e.g., David & Lisa Park",
+  "SELLER NAME": "e.g., The Hendersons",
+  "AGENT NAME": "e.g., Mike Torres",
+  "THEIR NAME": "e.g., Jessica Adams",
+  "YOUR PHONE": "e.g., (312) 555-0192",
+  "YOUR EMAIL": "e.g., sarah@kwrealty.com",
+  "YOUR MARKET/AREA": "e.g., North Shore suburbs",
+  "THEIR OBJECTION": "e.g., We want to wait for rates to drop",
+  "DATE": "e.g., March 15, 2026",
+  "TIMEFRAME": "e.g., 60 days, 6 months",
+  "NUMBER OF YEARS": "e.g., 8 years",
+};
+
 // --- Helpers ---
 function pushEvent(event: string, data?: Record<string, string>) {
   if (typeof window !== "undefined" && (window as any).dataLayer) {
@@ -260,7 +296,14 @@ function pushEvent(event: string, data?: Record<string, string>) {
 }
 
 function highlightBrackets(text: string): string {
-  return text.replace(/\[([^\]]+)\]/g, "<mark>[$1]</mark>");
+  return text.replace(/\[([^\]]+)\]/g, (match, inner) => {
+    const upperInner = inner.toUpperCase().trim();
+    const example = VARIABLE_EXAMPLES[upperInner];
+    if (example) {
+      return `<mark>[${inner} — ${example}]</mark>`;
+    }
+    return `<mark>${match}</mark>`;
+  });
 }
 
 function searchPrompts(query: string): Prompt[] {
@@ -292,7 +335,6 @@ function getSubcategoryResults(sub: Subcategory): Prompt[] {
   const matching = prompts.filter(sub.filter);
   const featured = sub.featured || [];
 
-  // Featured first, then rest
   const featuredPrompts = featured
     .map((id) => matching.find((p) => p.id === id))
     .filter(Boolean) as Prompt[];
@@ -300,6 +342,28 @@ function getSubcategoryResults(sub: Subcategory): Prompt[] {
   const rest = matching.filter((p) => !featured.includes(p.id));
 
   return [...featuredPrompts, ...rest];
+}
+
+function getRelatedPrompts(prompt: Prompt, count: number = 3): Prompt[] {
+  const words = prompt.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+  const scored = prompts
+    .filter((p) => p.id !== prompt.id)
+    .map((p) => {
+      let score = 0;
+      if (p.category === prompt.category) score += 5;
+      if (p.difficulty === prompt.difficulty) score += 1;
+      for (const w of words) {
+        if (p.title.toLowerCase().includes(w)) score += 3;
+        if (p.bestFor.toLowerCase().includes(w)) score += 1;
+      }
+      return { prompt: p, score };
+    });
+
+  return scored
+    .filter((s) => s.score > 3)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, count)
+    .map((s) => s.prompt);
 }
 
 // --- Components ---
@@ -343,20 +407,276 @@ function QuickPickIcon({ icon }: { icon: string }) {
   }
 }
 
+function HeartIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      width={18}
+      height={18}
+      viewBox="0 0 24 24"
+      fill={filled ? "#ef4444" : "none"}
+      stroke={filled ? "#ef4444" : "#64748b"}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  );
+}
+
+function OnboardingBanner({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div
+      className="fade-in"
+      style={{
+        background: "rgba(56,189,248,0.08)",
+        border: "1px solid rgba(56,189,248,0.2)",
+        borderRadius: 14,
+        padding: "16px 20px",
+        marginBottom: 20,
+        position: "relative",
+      }}
+    >
+      <button
+        onClick={onDismiss}
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 12,
+          background: "none",
+          border: "none",
+          color: "#64748b",
+          cursor: "pointer",
+          fontSize: 16,
+          padding: 4,
+          lineHeight: 1,
+        }}
+        aria-label="Dismiss"
+      >
+        x
+      </button>
+      <p
+        style={{
+          fontSize: 14,
+          fontWeight: 600,
+          color: "#38bdf8",
+          marginBottom: 10,
+        }}
+      >
+        How it works
+      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {[
+          { num: "1", text: "Find a prompt" },
+          { num: "2", text: "Copy it" },
+          { num: "3", text: "Paste into ChatGPT or Claude" },
+          { num: "4", text: "Fill in the [brackets]" },
+        ].map((step) => (
+          <div
+            key={step.num}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              fontSize: 13,
+              color: "#cbd5e1",
+            }}
+          >
+            <span
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: "50%",
+                background: "rgba(56,189,248,0.15)",
+                color: "#38bdf8",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 12,
+                fontWeight: 700,
+                flexShrink: 0,
+              }}
+            >
+              {step.num}
+            </span>
+            {step.text}
+            {step.num !== "4" && (
+              <span style={{ color: "#334155", marginLeft: 2 }}>&rarr;</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DifficultyLegend() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        justifyContent: "center",
+        marginBottom: 6,
+        marginTop: -8,
+      }}
+    >
+      {(["beginner", "intermediate", "advanced"] as const).map((d) => (
+        <div
+          key={d}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            fontSize: 11,
+            color: "#64748b",
+          }}
+        >
+          <span
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: "50%",
+              background: DIFFICULTY_COLORS[d],
+            }}
+          />
+          {DIFFICULTY_LABELS[d]}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function BeforeAfterExample() {
+  return (
+    <div
+      style={{
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        borderRadius: 14,
+        padding: "20px",
+        marginBottom: 32,
+      }}
+    >
+      <p
+        style={{
+          fontSize: 13,
+          fontWeight: 600,
+          color: "#64748b",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          marginBottom: 14,
+          textAlign: "center",
+        }}
+      >
+        See it in action
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div>
+          <p
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: "#ef4444",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: 6,
+            }}
+          >
+            Without AI
+          </p>
+          <div
+            style={{
+              background: "rgba(239,68,68,0.06)",
+              border: "1px solid rgba(239,68,68,0.12)",
+              borderRadius: 10,
+              padding: "12px 14px",
+              fontSize: 13,
+              color: "#94a3b8",
+              lineHeight: 1.5,
+              fontStyle: "italic",
+            }}
+          >
+            &ldquo;Hi, just checking in to see if you&apos;re still interested
+            in buying a home. Let me know if you have any questions!&rdquo;
+          </div>
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <svg
+            width={16}
+            height={16}
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <line x1="8" y1="3" x2="8" y2="13" />
+            <polyline points="4 9 8 13 12 9" />
+          </svg>
+        </div>
+        <div>
+          <p
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: "#10b981",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: 6,
+            }}
+          >
+            With AI Prompt Vault
+          </p>
+          <div
+            style={{
+              background: "rgba(16,185,129,0.06)",
+              border: "1px solid rgba(16,185,129,0.12)",
+              borderRadius: 10,
+              padding: "12px 14px",
+              fontSize: 13,
+              color: "#cbd5e1",
+              lineHeight: 1.5,
+              fontStyle: "italic",
+            }}
+          >
+            &ldquo;Sarah, last time we chatted you were debating between Lincoln
+            Park and Lakeview — did that new coffee shop on Armitage tip the
+            scales? I just listed a 2BR that checks every box you mentioned.
+            Worth a peek?&rdquo;
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PromptCard({
   prompt,
   isExpanded,
   onToggle,
   onCopy,
+  isFavorited,
+  onToggleFavorite,
+  onNavigateToPrompt,
 }: {
   prompt: Prompt;
   isExpanded: boolean;
   onToggle: () => void;
   onCopy: (prompt: Prompt) => void;
+  isFavorited: boolean;
+  onToggleFavorite: (promptId: string) => void;
+  onNavigateToPrompt: (prompt: Prompt) => void;
 }) {
   const [showFull, setShowFull] = useState(false);
   const displayText =
     !showFull && prompt.quickStart ? prompt.quickStart : prompt.prompt;
+
+  const relatedPrompts = useMemo(
+    () => (isExpanded ? getRelatedPrompts(prompt) : []),
+    [isExpanded, prompt]
+  );
 
   return (
     <div
@@ -492,6 +812,27 @@ function PromptCard({
 
       {isExpanded && (
         <div className="slide-up" style={{ padding: "0 24px 24px" }}>
+          {/* Favorite button */}
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+            <button
+              onClick={() => onToggleFavorite(prompt.id)}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 4,
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                color: isFavorited ? "#ef4444" : "#64748b",
+                fontSize: 12,
+              }}
+            >
+              <HeartIcon filled={isFavorited} />
+              {isFavorited ? "Saved" : "Save"}
+            </button>
+          </div>
+
           <div
             className="prompt-text"
             style={{
@@ -511,21 +852,56 @@ function PromptCard({
             }}
           />
 
+          {/* Pill-style toggle for quick-start / full version */}
           {prompt.quickStart && (
-            <button
-              onClick={() => setShowFull(!showFull)}
+            <div
               style={{
-                background: "none",
-                border: "none",
-                color: "#38bdf8",
-                fontSize: 13,
-                fontWeight: 500,
-                cursor: "pointer",
-                padding: "10px 0 4px",
+                display: "flex",
+                marginTop: 12,
+                background: "rgba(255,255,255,0.04)",
+                borderRadius: 8,
+                padding: 3,
+                border: "1px solid rgba(255,255,255,0.06)",
+                width: "fit-content",
               }}
             >
-              {showFull ? "Show quick-start version" : "Show full version"}
-            </button>
+              <button
+                onClick={() => setShowFull(false)}
+                style={{
+                  padding: "6px 14px",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  borderRadius: 6,
+                  border: "none",
+                  cursor: "pointer",
+                  background: !showFull
+                    ? "rgba(56,189,248,0.15)"
+                    : "transparent",
+                  color: !showFull ? "#38bdf8" : "#64748b",
+                  transition: "all 0.2s",
+                }}
+              >
+                Quick-start
+              </button>
+              <button
+                onClick={() => setShowFull(true)}
+                style={{
+                  padding: "6px 14px",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  borderRadius: 6,
+                  border: "none",
+                  cursor: "pointer",
+                  background: showFull
+                    ? "rgba(56,189,248,0.15)"
+                    : "transparent",
+                  color: showFull ? "#38bdf8" : "#64748b",
+                  transition: "all 0.2s",
+                }}
+              >
+                Full version
+              </button>
+            </div>
           )}
 
           {prompt.whatYouGet && (
@@ -537,7 +913,7 @@ function PromptCard({
                 lineHeight: 1.5,
               }}
             >
-              <strong style={{ color: "#cbd5e1" }}>What you'll get:</strong>{" "}
+              <strong style={{ color: "#cbd5e1" }}>What you&apos;ll get:</strong>{" "}
               {prompt.whatYouGet}
             </p>
           )}
@@ -575,8 +951,76 @@ function PromptCard({
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
             </svg>
-            Copy Prompt
+            {prompt.isInteractive ? "Copy & Start Practicing" : "Copy Prompt"}
           </button>
+
+          {/* Related prompts */}
+          {relatedPrompts.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <p
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: "#64748b",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  marginBottom: 8,
+                }}
+              >
+                Related prompts
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {relatedPrompts.map((rp) => (
+                  <button
+                    key={rp.id}
+                    onClick={() => onNavigateToPrompt(rp)}
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.06)",
+                      borderRadius: 8,
+                      padding: "10px 14px",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      color: "#cbd5e1",
+                      fontSize: 13,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      transition: "border-color 0.2s",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.borderColor = "rgba(56,189,248,0.2)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")
+                    }
+                  >
+                    <span
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: DIFFICULTY_COLORS[rp.difficulty],
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span style={{ flex: 1 }}>{rp.title}</span>
+                    <svg
+                      width={14}
+                      height={14}
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="#475569"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    >
+                      <polyline points="6 4 10 8 6 12" />
+                    </svg>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -665,7 +1109,7 @@ function EmailModal({
             lineHeight: 1.3,
           }}
         >
-          We'll send you a personalized starter pack.
+          We&apos;ll send you a personalized starter pack.
         </h2>
         <p
           style={{
@@ -675,7 +1119,7 @@ function EmailModal({
             lineHeight: 1.5,
           }}
         >
-          Enter your email and we'll send your top 5 prompts based on your
+          Enter your email and we&apos;ll send your top 5 prompts based on your
           experience level. All 400+ prompts unlock instantly.
         </p>
 
@@ -794,6 +1238,9 @@ export default function Home() {
   const [pendingCopyPrompt, setPendingCopyPrompt] = useState<Prompt | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [recentlyUsed, setRecentlyUsed] = useState<string[]>([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [showFavoritesSection, setShowFavoritesSection] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -806,6 +1253,73 @@ export default function Home() {
         setRecentlyUsed(JSON.parse(recent));
       } catch {}
     }
+
+    const onboardingDismissed = localStorage.getItem("prompt_vault_onboarding_dismissed");
+    if (!onboardingDismissed) setShowOnboarding(true);
+
+    const savedFavorites = localStorage.getItem("prompt_vault_favorites");
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch {}
+    }
+
+    // Handle URL routing
+    handleUrlRoute();
+    window.addEventListener("popstate", handleUrlRoute);
+    return () => window.removeEventListener("popstate", handleUrlRoute);
+  }, []);
+
+  const handleUrlRoute = useCallback(() => {
+    const path = window.location.pathname;
+    if (path === "/" || path === "") return;
+
+    // Handle /prompt/ch3-2 style URLs
+    const promptMatch = path.match(/^\/prompt\/(.+)$/);
+    if (promptMatch) {
+      const promptId = promptMatch[1];
+      const found = prompts.find((p) => p.id === promptId);
+      if (found) {
+        setActiveCategory(found.category);
+        const subs = SUBCATEGORIES[found.category] || [];
+        const matchingSub = subs.find((s) => s.filter(found));
+        if (matchingSub) setActiveSubcategory(matchingSub.id);
+        setExpandedId(found.id);
+        setQuery("");
+        return;
+      }
+    }
+
+    // Handle /category/subcategory style URLs
+    const catSubMatch = path.match(/^\/([^/]+)\/([^/]+)$/);
+    if (catSubMatch) {
+      const [, cat, sub] = catSubMatch;
+      if (SUBCATEGORIES[cat]) {
+        const subObj = SUBCATEGORIES[cat].find((s) => s.id === sub);
+        if (subObj) {
+          setActiveCategory(cat);
+          setActiveSubcategory(sub);
+          setQuery("");
+          return;
+        }
+      }
+    }
+
+    // Handle /category style URLs
+    const catMatch = path.match(/^\/([^/]+)$/);
+    if (catMatch) {
+      const cat = catMatch[1];
+      if (SUBCATEGORIES[cat]) {
+        setActiveCategory(cat);
+        setActiveSubcategory(null);
+        setQuery("");
+      }
+    }
+  }, []);
+
+  // Update URL when navigating
+  const updateUrl = useCallback((path: string) => {
+    window.history.pushState(null, "", path);
   }, []);
 
   // Search results
@@ -830,6 +1344,13 @@ export default function Home() {
       .filter(Boolean) as Prompt[];
   }, [recentlyUsed]);
 
+  // Favorite prompts
+  const favoritePrompts = useMemo(() => {
+    return favorites
+      .map((id) => prompts.find((p) => p.id === id))
+      .filter(Boolean) as Prompt[];
+  }, [favorites]);
+
   const handleSearch = useCallback((value: string) => {
     setQuery(value);
     if (value.trim()) {
@@ -837,7 +1358,8 @@ export default function Home() {
       setActiveSubcategory(null);
       pushEvent("search", { search_query: value });
     }
-  }, []);
+    updateUrl("/");
+  }, [updateUrl]);
 
   const handleQuickPick = useCallback((categoryId: string) => {
     setActiveCategory(categoryId);
@@ -845,7 +1367,8 @@ export default function Home() {
     setQuery("");
     setExpandedId(null);
     pushEvent("search", { search_query: `quick_pick:${categoryId}` });
-  }, []);
+    updateUrl(`/${categoryId}`);
+  }, [updateUrl]);
 
   const handleSubcategory = useCallback(
     (subId: string) => {
@@ -854,22 +1377,23 @@ export default function Home() {
       pushEvent("search", {
         search_query: `subcategory:${activeCategory}:${subId}`,
       });
+      updateUrl(`/${activeCategory}/${subId}`);
     },
-    [activeCategory]
+    [activeCategory, updateUrl]
   );
 
   const handleBack = useCallback(() => {
     if (activeSubcategory) {
-      // Go back to subcategory picker
       setActiveSubcategory(null);
       setExpandedId(null);
+      updateUrl(`/${activeCategory}`);
     } else {
-      // Go back to home
       setActiveCategory(null);
       setQuery("");
       setExpandedId(null);
+      updateUrl("/");
     }
-  }, [activeSubcategory]);
+  }, [activeSubcategory, activeCategory, updateUrl]);
 
   const handleToggle = useCallback((promptId: string) => {
     setExpandedId((prev) => {
@@ -923,6 +1447,32 @@ export default function Home() {
     },
     [pendingCopyPrompt, executeCopy]
   );
+
+  const handleDismissOnboarding = useCallback(() => {
+    setShowOnboarding(false);
+    localStorage.setItem("prompt_vault_onboarding_dismissed", "true");
+  }, []);
+
+  const handleToggleFavorite = useCallback((promptId: string) => {
+    setFavorites((prev) => {
+      const updated = prev.includes(promptId)
+        ? prev.filter((id) => id !== promptId)
+        : [promptId, ...prev];
+      localStorage.setItem("prompt_vault_favorites", JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const handleNavigateToPrompt = useCallback((prompt: Prompt) => {
+    setActiveCategory(prompt.category);
+    const subs = SUBCATEGORIES[prompt.category] || [];
+    const matchingSub = subs.find((s) => s.filter(prompt));
+    if (matchingSub) {
+      setActiveSubcategory(matchingSub.id);
+    }
+    setExpandedId(prompt.id);
+    updateUrl(`/prompt/${prompt.id}`);
+  }, [updateUrl]);
 
   // Determine what view to show
   const isHome = !query.trim() && !activeCategory;
@@ -1044,15 +1594,20 @@ export default function Home() {
           )}
         </div>
 
-        {/* HOME: Quick Picks + Recently Used */}
+        {/* HOME: Onboarding + Quick Picks + Before/After + Recently Used + Favorites */}
         {isHome && (
           <section className="fade-in">
+            {/* Onboarding Banner */}
+            {showOnboarding && (
+              <OnboardingBanner onDismiss={handleDismissOnboarding} />
+            )}
+
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: 12,
-                marginBottom: 32,
+                marginBottom: 20,
               }}
             >
               {QUICK_PICKS.map((qp) => (
@@ -1105,6 +1660,105 @@ export default function Home() {
               ))}
             </div>
 
+            {/* Difficulty Legend */}
+            <DifficultyLegend />
+
+            {/* Before/After Example */}
+            <div style={{ marginTop: 20 }}>
+              <BeforeAfterExample />
+            </div>
+
+            {/* Favorites */}
+            {favoritePrompts.length > 0 && (
+              <section style={{ marginBottom: 32 }}>
+                <button
+                  onClick={() => setShowFavoritesSection(!showFavoritesSection)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                    marginBottom: 12,
+                    width: "100%",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: "#64748b",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      margin: 0,
+                    }}
+                  >
+                    Saved Prompts ({favoritePrompts.length})
+                  </h2>
+                  <svg
+                    width={14}
+                    height={14}
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="#64748b"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    style={{
+                      transform: showFavoritesSection ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "transform 0.2s",
+                    }}
+                  >
+                    <polyline points="4 6 8 10 12 6" />
+                  </svg>
+                </button>
+                {showFavoritesSection && (
+                  <div
+                    className="fade-in"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 8,
+                    }}
+                  >
+                    {favoritePrompts.map((p) => (
+                      <button
+                        key={p.id}
+                        onClick={() => handleNavigateToPrompt(p)}
+                        style={{
+                          background: "rgba(255,255,255,0.03)",
+                          border: "1px solid rgba(255,255,255,0.06)",
+                          borderRadius: 10,
+                          padding: "12px 16px",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          color: "#cbd5e1",
+                          fontSize: 14,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                        }}
+                      >
+                        <HeartIcon filled={true} />
+                        <span style={{ flex: 1 }}>{p.title}</span>
+                        <span
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: "50%",
+                            background: DIFFICULTY_COLORS[p.difficulty],
+                            flexShrink: 0,
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Recently Used */}
             {recentPrompts.length > 0 && (
               <section style={{ marginBottom: 32 }}>
                 <h2
@@ -1129,16 +1783,7 @@ export default function Home() {
                   {recentPrompts.map((p) => (
                     <button
                       key={p.id}
-                      onClick={() => {
-                        setActiveCategory(p.category);
-                        // Find which subcategory this prompt belongs to
-                        const subs = SUBCATEGORIES[p.category] || [];
-                        const matchingSub = subs.find((s) => s.filter(p));
-                        if (matchingSub) {
-                          setActiveSubcategory(matchingSub.id);
-                        }
-                        setExpandedId(p.id);
-                      }}
+                      onClick={() => handleNavigateToPrompt(p)}
                       style={{
                         background: "rgba(255,255,255,0.03)",
                         border: "1px solid rgba(255,255,255,0.06)",
@@ -1186,6 +1831,7 @@ export default function Home() {
                 onClick={() => {
                   setQuery("");
                   searchInputRef.current?.focus();
+                  updateUrl("/");
                 }}
                 style={{
                   background: "none",
@@ -1219,12 +1865,15 @@ export default function Home() {
               </span>
             </div>
 
+            <DifficultyLegend />
+
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
                 gap: 10,
                 paddingBottom: 48,
+                marginTop: 12,
               }}
             >
               {searchResults.length === 0 && (
@@ -1251,6 +1900,9 @@ export default function Home() {
                   isExpanded={expandedId === p.id}
                   onToggle={() => handleToggle(p.id)}
                   onCopy={handleCopy}
+                  isFavorited={favorites.includes(p.id)}
+                  onToggleFavorite={handleToggleFavorite}
+                  onNavigateToPrompt={handleNavigateToPrompt}
                 />
               ))}
             </div>
@@ -1463,12 +2115,15 @@ export default function Home() {
               </span>
             </div>
 
+            <DifficultyLegend />
+
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
                 gap: 10,
                 paddingBottom: 48,
+                marginTop: 8,
               }}
             >
               {subcategoryResults.map((p) => (
@@ -1478,13 +2133,16 @@ export default function Home() {
                   isExpanded={expandedId === p.id}
                   onToggle={() => handleToggle(p.id)}
                   onCopy={handleCopy}
+                  isFavorited={favorites.includes(p.id)}
+                  onToggleFavorite={handleToggleFavorite}
+                  onNavigateToPrompt={handleNavigateToPrompt}
                 />
               ))}
             </div>
           </section>
         )}
 
-        {/* Footer */}
+        {/* Credibility Footer */}
         <footer
           style={{
             padding: "32px 0",
@@ -1492,8 +2150,21 @@ export default function Home() {
             borderTop: "1px solid rgba(255,255,255,0.06)",
           }}
         >
+          <p
+            style={{
+              fontSize: 13,
+              color: "#64748b",
+              marginBottom: 6,
+              fontWeight: 500,
+            }}
+          >
+            Built by agents, for agents
+          </p>
+          <p style={{ fontSize: 12, color: "#475569", marginBottom: 4 }}>
+            400+ prompts used by 2,000+ real estate professionals
+          </p>
           <p style={{ fontSize: 12, color: "#475569" }}>
-            &copy; 2026 DJP3 Consulting Inc. Powered by AI.
+            &copy; 2026 DJP3 Consulting Inc.
           </p>
         </footer>
       </div>
