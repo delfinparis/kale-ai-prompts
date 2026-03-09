@@ -6,31 +6,41 @@ import "./globals.css";
 const GTM_ID = "GTM-P6MPH7";
 
 export const metadata: Metadata = {
-  title: "AI Prompt Vault for Realtors - Copy-Paste AI Scripts",
+  title: "570 AI Prompts for Real Estate Agents — Copy & Paste Ready",
   description:
-    "570 copy-paste-ready AI prompts built for working real estate agents. Follow-up emails, listing descriptions, social posts, roleplay coaching and more.",
+    "Stop staring at blank screens. 570 ready-to-use ChatGPT prompts for realtors — listings, follow-ups, lead gen scripts, objection handling, and coaching roleplays. Used by 2,000+ agents.",
   metadataBase: new URL("https://tapthis.co"),
+  keywords: [
+    "AI prompts for realtors",
+    "real estate AI prompts",
+    "ChatGPT prompts real estate",
+    "AI for real estate agents",
+    "real estate scripts",
+    "realtor AI tools",
+    "listing description generator",
+    "real estate email templates",
+  ],
   openGraph: {
-    title: "AI Prompt Vault for Realtors",
+    title: "AI Prompt Vault — 570 Prompts Built for Real Estate Agents",
     description:
-      "570 copy-paste prompts that write your emails, listings, follow-ups, and scripts — so you don't have to.",
+      "Copy-paste AI prompts that write your emails, listings, follow-ups, and scripts. Built by agents, for agents.",
     url: "https://tapthis.co",
-    siteName: "AI Prompt Vault",
+    siteName: "AI Prompt Vault for Realtors",
     images: [
       {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "AI Prompt Vault — 570 AI prompts for real estate agents",
+        alt: "AI Prompt Vault — 570 copy-paste AI prompts for real estate agents",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Prompt Vault for Realtors",
+    title: "570 AI Prompts for Realtors — Copy, Paste, Close More Deals",
     description:
-      "570 copy-paste prompts that write your emails, listings, follow-ups, and scripts.",
+      "Listings, follow-ups, lead gen, coaching roleplays — 570 ready-to-use prompts built for working real estate agents.",
     images: ["/api/og"],
   },
 };
