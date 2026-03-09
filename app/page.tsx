@@ -1540,7 +1540,7 @@ function EmailModal({
           }}
         >
           Enter your email and we&apos;ll send your top 5 prompts based on your
-          experience level. All 400+ prompts unlock instantly.
+          experience level. All {prompts.length} prompts unlock instantly.
         </p>
 
         {error && (
@@ -2002,7 +2002,7 @@ export default function Home() {
               marginBottom: 32,
             }}
           >
-            400+ copy-paste prompts that write your emails, listings,
+            {prompts.length} copy-paste prompts that write your emails, listings,
             follow-ups, and scripts — so you don&apos;t have to.
           </p>
         </section>
@@ -2488,7 +2488,7 @@ export default function Home() {
             Built by agents, for agents
           </p>
           <p style={{ fontSize: 12, color: "#475569", marginBottom: 4 }}>
-            400+ prompts used by 2,000+ real estate professionals
+            {prompts.length} prompts used by 2,000+ real estate professionals
           </p>
           <p style={{ fontSize: 12, color: "#475569" }}>
             &copy; 2026 DJP3 Consulting Inc.
