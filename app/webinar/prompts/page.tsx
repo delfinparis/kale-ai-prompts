@@ -61,6 +61,44 @@ export default function WebinarPromptsPage() {
           </p>
         </div>
 
+        {/* YouTube Replay */}
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            paddingBottom: "56.25%",
+            marginBottom: 10,
+            borderRadius: 12,
+            overflow: "hidden",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <iframe
+            src="https://www.youtube.com/embed/WNiO8r_h3rk?rel=0"
+            title="You're Doing AI 100% Wrong — 5 AI Strategies for Real Estate Agents"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              border: "none",
+            }}
+          />
+        </div>
+        <p
+          style={{
+            fontSize: 12,
+            color: "#64748b",
+            textAlign: "center",
+            marginBottom: 32,
+          }}
+        >
+          Watch the full webinar replay above, then grab the prompts below.
+        </p>
+
         {/* Download Card */}
         <a
           href="/prompt-guide.pdf"
