@@ -56,7 +56,7 @@ export default function HeartlandThankYouPage() {
           </h1>
           <p style={{ fontSize: 15, color: "#94a3b8", lineHeight: 1.6 }}>
             Great hanging with the Women&apos;s Council of Realtors at the
-            Heartland Association AI event. Here&apos;s everything I promised:
+            Heartland REALTOR&reg; Organization AI event. Here&apos;s everything I promised:
             the full session replay, your prompt guide, and a free strategy
             session if you want one.
           </p>
