@@ -7,6 +7,10 @@ import SocialProofStrip from "./components/SocialProofStrip";
 import GlobalSearch from "./components/GlobalSearch";
 import TopThisWeek from "./components/TopThisWeek";
 import StrategyCallFooter from "./components/StrategyCallFooter";
+import StacksEntryCard from "./components/StacksEntryCard";
+import FeedbackWidget from "./components/FeedbackWidget";
+
+const FREE_COPY_LIMIT = 2;
 
 // --- Types ---
 interface Prompt {
@@ -1699,6 +1703,8 @@ export default function Home() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFavoritesSection, setShowFavoritesSection] = useState(false);
+  const [freeCopiesUsed, setFreeCopiesUsed] = useState(0);
+  const [feedbackPromptId, setFeedbackPromptId] = useState<string | null>(null);
 
   useEffect(() => {
     const unlocked = localStorage.getItem("prompt_vault_unlocked");
@@ -1719,6 +1725,12 @@ export default function Home() {
       try {
         setFavorites(JSON.parse(savedFavorites));
       } catch {}
+    }
+
+    const freeCount = localStorage.getItem("prompt_vault_free_copies");
+    if (freeCount) {
+      const n = parseInt(freeCount, 10);
+      if (!isNaN(n)) setFreeCopiesUsed(n);
     }
 
     // Handle URL routing
@@ -1883,13 +1895,25 @@ export default function Home() {
   const handleCopy = useCallback(
     (prompt: Prompt) => {
       if (!isUnlocked) {
+        // Progressive gate: allow FREE_COPY_LIMIT copies before the email wall
+        if (freeCopiesUsed < FREE_COPY_LIMIT) {
+          const next = freeCopiesUsed + 1;
+          setFreeCopiesUsed(next);
+          localStorage.setItem("prompt_vault_free_copies", String(next));
+          pushEvent("prompt_copy_free", {
+            prompt_id: prompt.id,
+            free_copy_number: String(next),
+          });
+          executeCopy(prompt);
+          return;
+        }
         setPendingCopyPrompt(prompt);
         setShowEmailModal(true);
         return;
       }
       executeCopy(prompt);
     },
-    [isUnlocked]
+    [isUnlocked, freeCopiesUsed]
   );
 
   const executeCopy = useCallback((prompt: Prompt) => {
@@ -1898,6 +1922,9 @@ export default function Home() {
 
     setCopiedId(prompt.id);
     setTimeout(() => setCopiedId(null), 2000);
+
+    // Show feedback widget after the "copied!" toast fades
+    setTimeout(() => setFeedbackPromptId(prompt.id), 2200);
 
     pushEvent("prompt_copy", {
       prompt_id: prompt.id,
@@ -2092,6 +2119,9 @@ export default function Home() {
                 </button>
               ))}
             </div>
+
+            {/* Stacks entry point */}
+            <StacksEntryCard />
 
             {/* Top 10 This Week */}
             <TopThisWeek prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
@@ -2540,6 +2570,12 @@ export default function Home() {
           Copied to clipboard!
         </div>
       )}
+
+      {/* Feedback widget — appears after a copy event */}
+      <FeedbackWidget
+        promptId={feedbackPromptId}
+        onClose={() => setFeedbackPromptId(null)}
+      />
 
       {/* Strategy call sticky footer (persistent; dismissible) */}
       <StrategyCallFooter />

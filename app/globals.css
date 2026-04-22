@@ -93,3 +93,45 @@ body {
 .slide-up {
   animation: slideUp 0.35s ease-out;
 }
+
+/* Mobile UX: larger touch targets + collapsible variable hints */
+@media (max-width: 640px) {
+  /* Minimum 44x44 touch target for any button (WCAG AA) */
+  button {
+    min-height: 44px;
+  }
+  /* But don't force it on icon-only mini buttons that explicitly opt out */
+  button.mini-btn {
+    min-height: auto;
+  }
+  /* Primary copy buttons — give more finger room */
+  button.copy-btn-primary {
+    padding: 16px 20px !important;
+    font-size: 15px !important;
+    min-height: 52px;
+  }
+  /* Variable hint marks — hide example text on mobile, show on tap */
+  .prompt-text mark {
+    font-size: 0.95em;
+  }
+  .prompt-text.hide-hints mark .hint {
+    display: none;
+  }
+}
+
+/* Variable hint text (shown inline on desktop, collapsible on mobile) */
+.prompt-text mark .hint {
+  color: rgba(249, 115, 22, 0.75);
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Toggle button for hints on mobile */
+.hints-toggle {
+  display: none;
+}
+@media (max-width: 640px) {
+  .hints-toggle {
+    display: inline-flex;
+  }
+}
