@@ -3,6 +3,7 @@
 import { spaceGrotesk } from "../fonts";
 import Link from "next/link";
 import { useState } from "react";
+import OpenInAI from "../components/OpenInAI";
 
 const HEROES = [
   {
@@ -468,24 +469,29 @@ export default function ProspectingPage() {
                       >
                         {h.query}
                       </div>
-                      <button
-                        onClick={() => handleCopy(h.query, copyId)}
-                        style={{
-                          marginTop: 12,
-                          background: copiedId === copyId ? "#10b981" : "rgba(56, 189, 248, 0.15)",
-                          border: "1px solid rgba(56, 189, 248, 0.3)",
-                          color: copiedId === copyId ? "#0a1628" : "#38bdf8",
-                          fontSize: 13,
-                          fontWeight: 700,
-                          padding: "10px 16px",
-                          borderRadius: 8,
-                          cursor: "pointer",
-                          width: "100%",
-                          transition: "all 0.15s ease",
-                        }}
-                      >
-                        {copiedId === copyId ? "✓ Copied — paste into Claude" : "Copy query"}
-                      </button>
+                      <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+                        <OpenInAI
+                          promptText={h.query}
+                          promptId={`hero-${h.number}`}
+                          label={`Run Query #${h.number} in Claude`}
+                        />
+                        <button
+                          onClick={() => handleCopy(h.query, copyId)}
+                          style={{
+                            background: copiedId === copyId ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.03)",
+                            border: `1px solid ${copiedId === copyId ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.08)"}`,
+                            color: copiedId === copyId ? "#34d399" : "#94a3b8",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            padding: "8px 14px",
+                            borderRadius: 8,
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                          }}
+                        >
+                          {copiedId === copyId ? "✓ Copied" : "Just copy (don't open app)"}
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

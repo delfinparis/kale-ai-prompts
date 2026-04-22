@@ -5,6 +5,7 @@ import Link from "next/link";
 import { spaceGrotesk } from "../fonts";
 import promptsData from "../../data/prompts.json";
 import StackPromptPicker from "../components/StackPromptPicker";
+import OpenInAI from "../components/OpenInAI";
 import {
   Stack,
   STARTER_TEMPLATES,
@@ -576,41 +577,46 @@ export default function StacksPage() {
               {currentRunPrompt.prompt}
             </div>
 
-            <div style={{ display: "flex", gap: 10 }}>
-              <button
-                onClick={handleCopyCurrent}
-                style={{
-                  flex: 1,
-                  background: copiedStep === runStep ? "#10b981" : "rgba(56,189,248,0.15)",
-                  border: `1px solid ${copiedStep === runStep ? "#10b981" : "rgba(56,189,248,0.3)"}`,
-                  color: copiedStep === runStep ? "#0a1628" : "#38bdf8",
-                  borderRadius: 10,
-                  padding: "14px 18px",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  letterSpacing: 0.3,
-                }}
-              >
-                {copiedStep === runStep ? "✓ Copied" : "Copy prompt"}
-              </button>
-              <button
-                onClick={handleNextStep}
-                style={{
-                  background: "linear-gradient(135deg, #10b981, #38bdf8)",
-                  border: "none",
-                  color: "#0a1628",
-                  borderRadius: 10,
-                  padding: "14px 18px",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  letterSpacing: 0.3,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {runStep + 1 >= runningStack.promptIds.length ? "Finish ✓" : "Next →"}
-              </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <OpenInAI
+                promptText={currentRunPrompt.prompt}
+                promptId={currentRunPrompt.id}
+                label={`Run step ${runStep + 1} in Claude`}
+              />
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={handleCopyCurrent}
+                  style={{
+                    flex: 1,
+                    background: copiedStep === runStep ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${copiedStep === runStep ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.08)"}`,
+                    color: copiedStep === runStep ? "#34d399" : "#94a3b8",
+                    borderRadius: 10,
+                    padding: "10px 14px",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  {copiedStep === runStep ? "✓ Copied" : "Just copy"}
+                </button>
+                <button
+                  onClick={handleNextStep}
+                  style={{
+                    background: "rgba(56,189,248,0.12)",
+                    border: "1px solid rgba(56,189,248,0.3)",
+                    color: "#38bdf8",
+                    borderRadius: 10,
+                    padding: "10px 14px",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {runStep + 1 >= runningStack.promptIds.length ? "Finish ✓" : "Next →"}
+                </button>
+              </div>
             </div>
           </div>
         )}

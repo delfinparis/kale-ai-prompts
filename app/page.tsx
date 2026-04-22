@@ -9,6 +9,7 @@ import TopThisWeek from "./components/TopThisWeek";
 import StrategyCallFooter from "./components/StrategyCallFooter";
 import StacksEntryCard from "./components/StacksEntryCard";
 import FeedbackWidget from "./components/FeedbackWidget";
+import OpenInAI from "./components/OpenInAI";
 
 const FREE_COPY_LIMIT = 2;
 
@@ -1351,41 +1352,38 @@ function PromptCard({
             </p>
           )}
 
-          <button
-            onClick={() => onCopy(prompt)}
-            style={{
-              width: "100%",
-              marginTop: 16,
-              padding: "14px 24px",
-              background:
-                "linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)",
-              color: "white",
-              border: "none",
-              borderRadius: 12,
-              fontSize: 15,
-              fontWeight: 600,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-          >
-            <svg
-              width={18}
-              height={18}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* Primary: Run in Claude (or last-used tool) */}
+            <OpenInAI
+              promptText={prompt.quickStart || prompt.prompt}
+              promptId={prompt.id}
+              label={prompt.isInteractive ? "Copy & Run in Claude" : "Run in Claude"}
+            />
+            {/* Secondary: plain copy, for users who already have a tool open */}
+            <button
+              onClick={() => onCopy(prompt)}
+              style={{
+                padding: "10px 16px",
+                background: "rgba(255,255,255,0.04)",
+                color: "#94a3b8",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 10,
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+              }}
             >
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg>
-            {prompt.isInteractive ? "Copy & Start Practicing" : "Copy Prompt"}
-          </button>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              Just copy (don&apos;t open app)
+            </button>
+          </div>
 
           {/* Related prompts */}
           {relatedPrompts.length > 0 && (
