@@ -81,7 +81,7 @@ export default function StrategyCallFooter() {
           </div>
         </div>
         <a
-          href="https://calendly.com/djparis"
+          href="https://joinkale.com/schedule"
           onClick={handleClick}
           style={{
             background: "linear-gradient(135deg, #10b981, #38bdf8)",

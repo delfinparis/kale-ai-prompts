@@ -685,7 +685,7 @@ export default function ProspectingPage() {
             market. One call, one plan, then you execute.
           </p>
           <a
-            href="https://calendly.com/djparis"
+            href="https://joinkale.com/schedule"
             style={{
               display: "inline-block",
               background: "linear-gradient(135deg, #10b981, #38bdf8)",
