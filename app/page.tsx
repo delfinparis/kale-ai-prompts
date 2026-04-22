@@ -3,6 +3,10 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { spaceGrotesk } from "./fonts";
 import promptsData from "../data/prompts.json";
+import SocialProofStrip from "./components/SocialProofStrip";
+import GlobalSearch from "./components/GlobalSearch";
+import TopThisWeek from "./components/TopThisWeek";
+import StrategyCallFooter from "./components/StrategyCallFooter";
 
 // --- Types ---
 interface Prompt {
@@ -2007,9 +2011,15 @@ export default function Home() {
           </p>
         </section>
 
-        {/* HOME: Onboarding + Quick Picks + Before/After + Favorites + Recently Used */}
+        {/* Global search — always visible */}
+        <GlobalSearch prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
+
+        {/* HOME: Social proof + Onboarding + Quick Picks + Top This Week + Before/After */}
         {isHome && (
           <section className="fade-in">
+            {/* Social Proof */}
+            <SocialProofStrip />
+
             {/* Onboarding Banner */}
             {showOnboarding && (
               <OnboardingBanner onDismiss={handleDismissOnboarding} />
@@ -2082,6 +2092,9 @@ export default function Home() {
                 </button>
               ))}
             </div>
+
+            {/* Top 10 This Week */}
+            <TopThisWeek prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
 
             {/* Difficulty Legend */}
             <DifficultyLegend />
@@ -2527,6 +2540,9 @@ export default function Home() {
           Copied to clipboard!
         </div>
       )}
+
+      {/* Strategy call sticky footer (persistent; dismissible) */}
+      <StrategyCallFooter />
     </div>
   );
 }
