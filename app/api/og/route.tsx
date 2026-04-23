@@ -85,7 +85,19 @@ export async function GET() {
             flexDirection: "column",
           }}
         >
-          <span>Copy That<span style={{ color: "#10b981" }}>.</span></span>
+          <span style={{ display: "flex", alignItems: "center" }}>
+            Copy That<span style={{ color: "#10b981" }}>.</span>
+            <span
+              style={{
+                display: "inline-block",
+                width: "28px",
+                height: "80px",
+                background: "#10b981",
+                marginLeft: "18px",
+                borderRadius: "2px",
+              }}
+            />
+          </span>
           <span style={{ color: "#38bdf8", fontSize: "44px", marginTop: "12px" }}>570 AI prompts for realtors</span>
         </div>
 

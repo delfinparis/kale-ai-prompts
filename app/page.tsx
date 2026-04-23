@@ -2031,7 +2031,7 @@ export default function Home() {
               letterSpacing: "-0.02em",
             }}
           >
-            Copy That.
+            Copy That.<span className="brand-cursor" aria-hidden="true" />
             <br />
             <span style={{ color: "#38bdf8" }}>
               The AI cheat sheet for real estate agents.

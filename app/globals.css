@@ -94,6 +94,25 @@ body {
   animation: slideUp 0.35s ease-out;
 }
 
+/* Brand cursor - the signature blinking block after "Copy That." */
+.brand-cursor {
+  display: inline-block;
+  width: 0.42em;
+  height: 0.82em;
+  background: var(--green);
+  margin-left: 0.12em;
+  vertical-align: -0.08em;
+  border-radius: 1px;
+  animation: brandBlink 1.1s steps(2, jump-none) infinite;
+}
+@keyframes brandBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-cursor { animation: none; }
+}
+
 /* Mobile UX: larger touch targets + collapsible variable hints */
 @media (max-width: 640px) {
   /* Minimum 44x44 touch target for any button (WCAG AA) */
