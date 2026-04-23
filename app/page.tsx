@@ -48,6 +48,10 @@ interface Subcategory {
 
 const prompts = promptsData as Prompt[];
 
+const FEATURED_HERO_PROMPT_ID = "ch0-1";
+const featuredHeroPrompt =
+  prompts.find((p) => p.id === FEATURED_HERO_PROMPT_ID) || prompts[0];
+
 // --- Constants ---
 const QUICK_PICKS = [
   {
@@ -2053,12 +2057,69 @@ export default function Home() {
               fontSize: 15,
               color: "#94a3b8",
               lineHeight: 1.5,
-              marginBottom: 32,
+              marginBottom: 20,
             }}
           >
             Copy. Paste. Close more deals. {prompts.length} ready-to-go prompts
             for emails, listings, follow-ups, and scripts.
           </p>
+
+          {/* Featured prompt - instant "try one" affordance. */}
+          <div
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(16,185,129,0.09), rgba(56,189,248,0.07))",
+              border: "1px solid rgba(56,189,248,0.22)",
+              borderRadius: 14,
+              padding: 18,
+              textAlign: "left",
+            }}
+          >
+            <p
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: "#38bdf8",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                marginBottom: 10,
+              }}
+            >
+              Try one now — no signup
+            </p>
+            <p
+              className={spaceGrotesk.className}
+              style={{
+                fontSize: 17,
+                fontWeight: 700,
+                color: "#f1f5f9",
+                lineHeight: 1.3,
+                marginBottom: 6,
+              }}
+            >
+              {featuredHeroPrompt.title}
+            </p>
+            {featuredHeroPrompt.whatYouGet && (
+              <p
+                style={{
+                  fontSize: 13,
+                  color: "#94a3b8",
+                  lineHeight: 1.5,
+                  marginBottom: 14,
+                }}
+              >
+                {featuredHeroPrompt.whatYouGet}
+              </p>
+            )}
+            <OpenInAI
+              promptText={
+                featuredHeroPrompt.quickStart || featuredHeroPrompt.prompt
+              }
+              promptId={featuredHeroPrompt.id}
+              promptTitle={featuredHeroPrompt.title}
+              label="Customize & copy in 20 seconds"
+            />
+          </div>
         </section>
 
         {/* Global search - always visible */}
