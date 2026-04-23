@@ -63,7 +63,7 @@ export function deleteStack(id: string): Stack[] {
   return stacks;
 }
 
-// Starter templates — shown if user has zero stacks
+// Starter templates - shown if user has zero stacks
 export const STARTER_TEMPLATES: Omit<Stack, "id" | "createdAt" | "updatedAt">[] = [
   {
     name: "New Listing Launch",

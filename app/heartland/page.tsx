@@ -56,8 +56,8 @@ export default function HeartlandThankYouPage() {
           </h1>
           <p style={{ fontSize: 15, color: "#94a3b8", lineHeight: 1.6 }}>
             Great hanging with the Women&apos;s Council of Realtors at the
-            Heartland REALTOR&reg; Organization AI event. Here&apos;s everything I promised:
-            the full session replay, your prompt guide, and a free strategy
+            Heartland REALTOR&reg; Organization AI event. Here&apos;s everything I promised.
+            The full session replay. Your prompt guide. A free strategy
             session if you want one.
           </p>
         </div>
@@ -76,7 +76,7 @@ export default function HeartlandThankYouPage() {
         >
           <iframe
             src="https://www.youtube.com/embed/WNiO8r_h3rk?rel=0"
-            title="You're Doing AI 100% Wrong — 5 AI Strategies for Real Estate Agents"
+            title="You're Doing AI 100% Wrong - 5 AI Strategies for Real Estate Agents"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             style={{

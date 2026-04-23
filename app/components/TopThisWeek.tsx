@@ -17,7 +17,7 @@ interface Props<T extends TopPrompt = TopPrompt> {
   onNavigateToPrompt: (prompt: T) => void;
 }
 
-// Curated list — update weekly/monthly. Order = display order.
+// Curated list - update weekly/monthly. Order = display order.
 const TOP_IDS = [
   "ch3-2",    // Post-Showing Follow-Up Email (beginner, universal)
   "ch0-1",    // Wake Up Dead Leads (beginner, instant win)

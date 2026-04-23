@@ -56,7 +56,7 @@ export default function WebinarPromptsPage() {
             is ready.
           </h1>
           <p style={{ fontSize: 15, color: "#94a3b8", lineHeight: 1.6 }}>
-            9 copy-paste prompts from today's session - refined, expanded, and
+            9 copy-paste prompts from today's session. Refined, expanded,
             ready to use tonight.
           </p>
         </div>
@@ -75,7 +75,7 @@ export default function WebinarPromptsPage() {
         >
           <iframe
             src="https://www.youtube.com/embed/WNiO8r_h3rk?rel=0"
-            title="You're Doing AI 100% Wrong — 5 AI Strategies for Real Estate Agents"
+            title="You're Doing AI 100% Wrong - 5 AI Strategies for Real Estate Agents"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             style={{

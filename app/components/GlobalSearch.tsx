@@ -231,7 +231,7 @@ export default function GlobalSearch<T extends SearchablePrompt>({ prompts, onNa
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by topic, scenario, or keyword..."
+            placeholder="Search by keyword or scenario..."
             style={{
               flex: 1,
               background: "transparent",
@@ -327,7 +327,7 @@ export default function GlobalSearch<T extends SearchablePrompt>({ prompts, onNa
             justifyContent: "center",
           }}
         >
-          <span>↑↓ navigate</span>
+          <span>↑↓ move</span>
           <span>↵ open</span>
           <span>esc close</span>
         </div>

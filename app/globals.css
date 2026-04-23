@@ -104,13 +104,13 @@ body {
   button.mini-btn {
     min-height: auto;
   }
-  /* Primary copy buttons — give more finger room */
+  /* Primary copy buttons - give more finger room */
   button.copy-btn-primary {
     padding: 16px 20px !important;
     font-size: 15px !important;
     min-height: 52px;
   }
-  /* Variable hint marks — hide example text on mobile, show on tap */
+  /* Variable hint marks - hide example text on mobile, show on tap */
   .prompt-text mark {
     font-size: 0.95em;
   }
