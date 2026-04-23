@@ -1814,8 +1814,17 @@ export default function Home() {
     const subs = SUBCATEGORIES[activeCategory];
     const sub = subs?.find((s) => s.id === activeSubcategory);
     if (!sub) return [];
-    return getSubcategoryResults(sub, activeSubgroup || undefined);
-  }, [activeCategory, activeSubcategory, activeSubgroup]);
+    const results = getSubcategoryResults(sub, activeSubgroup || undefined);
+    // If a prompt was opened directly (e.g. from search) but its title
+    // doesn't match the subcategory's filter regex, the prompt would
+    // otherwise be invisible. Surface it at the top so the user sees
+    // what they searched for.
+    if (expandedId && !results.some((p) => p.id === expandedId)) {
+      const expanded = prompts.find((p) => p.id === expandedId);
+      if (expanded) return [expanded, ...results];
+    }
+    return results;
+  }, [activeCategory, activeSubcategory, activeSubgroup, expandedId, prompts]);
 
   // Recently used prompts
   const recentPrompts = useMemo(() => {
@@ -1968,12 +1977,17 @@ export default function Home() {
   const handleNavigateToPrompt = useCallback((prompt: Prompt) => {
     setActiveCategory(prompt.category);
     const subs = SUBCATEGORIES[prompt.category] || [];
-    const matchingSub = subs.find((s) => s.filter(prompt));
-    if (matchingSub) {
-      setActiveSubcategory(matchingSub.id);
-      if (matchingSub.subgroups) {
-        const matchingSubgroup = matchingSub.subgroups.find((sg) => sg.filter(prompt));
-        if (matchingSubgroup) setActiveSubgroup(matchingSubgroup.id);
+    // Subcategory filters are regex-on-title, so some prompts match none.
+    // Fall back to the first subcategory so we never strand the user on
+    // the "What specifically?" picker after a direct navigate.
+    const targetSub = subs.find((s) => s.filter(prompt)) || subs[0];
+    if (targetSub) {
+      setActiveSubcategory(targetSub.id);
+      if (targetSub.subgroups && targetSub.subgroups.length > 0) {
+        const matchingSubgroup = targetSub.subgroups.find((sg) => sg.filter(prompt));
+        setActiveSubgroup((matchingSubgroup || targetSub.subgroups[0]).id);
+      } else {
+        setActiveSubgroup(null);
       }
     }
     setExpandedId(prompt.id);
