@@ -2213,6 +2213,83 @@ export default function Home() {
             {/* Top 10 This Week */}
             <TopThisWeek prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
 
+            {/* Mid-scroll bridge to the 15-min strategy call. */}
+            <div
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(56,189,248,0.18)",
+                borderRadius: 14,
+                padding: 18,
+                marginBottom: 24,
+                textAlign: "left",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: "#38bdf8",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  marginBottom: 8,
+                }}
+              >
+                Liking what you see?
+              </p>
+              <p
+                className={spaceGrotesk.className}
+                style={{
+                  fontSize: 17,
+                  fontWeight: 700,
+                  color: "#f1f5f9",
+                  lineHeight: 1.3,
+                  marginBottom: 6,
+                }}
+              >
+                These are the prompts. The system behind them is bigger.
+              </p>
+              <p
+                style={{
+                  fontSize: 13,
+                  color: "#94a3b8",
+                  lineHeight: 1.5,
+                  marginBottom: 14,
+                }}
+              >
+                15 minutes with D.J. — we map what AI could be doing for your
+                pipeline, specific to your market.
+              </p>
+              <a
+                href="https://joinkale.com/schedule"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  if (
+                    typeof window !== "undefined" &&
+                    (window as { dataLayer?: unknown[] }).dataLayer
+                  ) {
+                    (window as { dataLayer?: unknown[] }).dataLayer!.push({
+                      event: "strategy_call_click",
+                      placement: "mid_scroll_bridge",
+                    });
+                  }
+                }}
+                style={{
+                  display: "inline-block",
+                  background: "linear-gradient(135deg, #10b981, #38bdf8)",
+                  color: "#0a1628",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  padding: "10px 18px",
+                  borderRadius: 10,
+                  textDecoration: "none",
+                  letterSpacing: 0.3,
+                }}
+              >
+                Book a 15-min call →
+              </a>
+            </div>
+
             {/* Difficulty Legend */}
             <DifficultyLegend />
 
