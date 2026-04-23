@@ -1353,11 +1353,11 @@ function PromptCard({
           )}
 
           <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
-            {/* Primary: Run in Claude (or last-used tool) */}
+            {/* Primary action - customize brackets, copy, open AI */}
             <OpenInAI
               promptText={prompt.quickStart || prompt.prompt}
               promptId={prompt.id}
-              label={prompt.isInteractive ? "Copy & Run in Claude" : "Run in Claude"}
+              promptTitle={prompt.title}
             />
             {/* Secondary: plain copy, for users who already have a tool open */}
             <button

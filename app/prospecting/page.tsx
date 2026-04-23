@@ -473,7 +473,7 @@ export default function ProspectingPage() {
                         <OpenInAI
                           promptText={h.query}
                           promptId={`hero-${h.number}`}
-                          label={`Run Query #${h.number} in Claude`}
+                          promptTitle={`Query #${h.number}: ${h.title}`}
                         />
                         <button
                           onClick={() => handleCopy(h.query, copyId)}

@@ -581,7 +581,7 @@ export default function StacksPage() {
               <OpenInAI
                 promptText={currentRunPrompt.prompt}
                 promptId={currentRunPrompt.id}
-                label={`Run step ${runStep + 1} in Claude`}
+                promptTitle={`Step ${runStep + 1}: ${currentRunPrompt.title}`}
               />
               <div style={{ display: "flex", gap: 8 }}>
                 <button
