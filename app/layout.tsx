@@ -6,9 +6,9 @@ import "./globals.css";
 const GTM_ID = "GTM-P6MPH7";
 
 export const metadata: Metadata = {
-  title: "570 AI Prompts for Real Estate Agents - Copy & Paste Ready",
+  title: "Copy That. — 570 AI Prompts for Real Estate Agents",
   description:
-    "Stop staring at blank screens. 570 ready-to-use ChatGPT prompts for realtors. Listings, follow-ups, lead gen scripts, objection handling, coaching roleplays. Used by 2,000+ agents.",
+    "Copy. Paste. Close more deals. 570 ready-to-go ChatGPT, Claude, and Gemini prompts built for real estate agents. Listings, follow-ups, lead gen, scripts, coaching roleplays. Used by 2,000+ agents.",
   metadataBase: new URL("https://tapthis.co"),
   keywords: [
     "AI prompts for realtors",
@@ -21,26 +21,26 @@ export const metadata: Metadata = {
     "real estate email templates",
   ],
   openGraph: {
-    title: "AI Prompt Vault - 570 Prompts Built for Real Estate Agents",
+    title: "Copy That. — The AI Cheat Sheet for Real Estate Agents",
     description:
-      "Copy-paste AI prompts that write your emails, listings, follow-ups, and scripts. Built by agents for agents.",
+      "Copy. Paste. Close more deals. 570 ready-to-go AI prompts for emails, listings, follow-ups, and scripts. Built by agents for agents.",
     url: "https://tapthis.co",
-    siteName: "AI Prompt Vault for Realtors",
+    siteName: "Copy That.",
     images: [
       {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "AI Prompt Vault - 570 copy-paste AI prompts for real estate agents",
+        alt: "Copy That. — 570 copy-paste AI prompts for real estate agents",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "570 AI Prompts for Realtors - Copy, Paste, Close More Deals",
+    title: "Copy That. — 570 AI Prompts for Real Estate Agents",
     description:
-      "Listings, follow-ups, lead gen, coaching roleplays. 570 ready-to-use prompts built for working real estate agents.",
+      "Copy. Paste. Close more deals. 570 ready-to-go AI prompts for working real estate agents.",
     images: ["/api/og"],
   },
 };

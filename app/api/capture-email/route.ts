@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
               emails: [{ email, type: "office" }],
             },
           ],
-          "custom.cf_c09clx40GuQEME4aFK13bHwS57NdQOUTMWI5KAq9EfY": "AI Prompt Vault",
+          "custom.cf_c09clx40GuQEME4aFK13bHwS57NdQOUTMWI5KAq9EfY": "Copy That",
         }),
       })
         .then((res) => res.json())
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
               },
               body: JSON.stringify({
                 lead_id: lead.id,
-                note: `Source: AI Prompt Vault\nExperience Level: ${levelLabel}\nCaptured: ${new Date().toISOString()}`,
+                note: `Source: Copy That\nExperience Level: ${levelLabel}\nCaptured: ${new Date().toISOString()}`,
               }),
             }).catch(() => {});
           }

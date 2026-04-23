@@ -68,14 +68,14 @@ export async function GET() {
             }}
           >
             <span style={{ fontSize: "18px" }}>⚡</span>
-            570 AI Prompts for Real Estate Agents
+            The AI Cheat Sheet for Real Estate Agents
           </div>
         </div>
 
         {/* Main title */}
         <div
           style={{
-            fontSize: "72px",
+            fontSize: "96px",
             fontWeight: 800,
             color: "#f1f5f9",
             lineHeight: 1.1,
@@ -85,8 +85,8 @@ export async function GET() {
             flexDirection: "column",
           }}
         >
-          <span>AI Prompt Vault</span>
-          <span style={{ color: "#38bdf8" }}>for Realtors</span>
+          <span>Copy That<span style={{ color: "#10b981" }}>.</span></span>
+          <span style={{ color: "#38bdf8", fontSize: "44px", marginTop: "12px" }}>570 AI prompts for realtors</span>
         </div>
 
         {/* Subtitle */}
@@ -100,7 +100,7 @@ export async function GET() {
             display: "flex",
           }}
         >
-          Copy-paste prompts for emails, listings, follow-ups, scripts. Stop staring at the blank screen.
+          Copy. Paste. Close more deals. Ready-to-go prompts for emails, listings, follow-ups, and scripts.
         </div>
 
         {/* Category pills */}

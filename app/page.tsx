@@ -966,7 +966,7 @@ function BeforeAfterExample() {
               marginBottom: 6,
             }}
           >
-            With AI Prompt Vault
+            With Copy That.
           </p>
           <div
             style={{
@@ -2031,10 +2031,10 @@ export default function Home() {
               letterSpacing: "-0.02em",
             }}
           >
-            Your AI Cheat Sheet
+            Copy That.
             <br />
             <span style={{ color: "#38bdf8" }}>
-              for Real Estate Agents
+              The AI cheat sheet for real estate agents.
             </span>
           </h1>
           <p
@@ -2045,8 +2045,8 @@ export default function Home() {
               marginBottom: 32,
             }}
           >
-            {prompts.length} copy-paste prompts. Emails, listings,
-            follow-ups, scripts. Stop staring at the blank screen.
+            Copy. Paste. Close more deals. {prompts.length} ready-to-go prompts
+            for emails, listings, follow-ups, and scripts.
           </p>
         </section>
 
