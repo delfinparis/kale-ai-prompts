@@ -686,7 +686,7 @@ export default function ProspectingPage() {
               margin: "0 auto 20px",
             }}
           >
-            An AI strategy call is a 45-minute working session where we build your 12-month GEO
+            An AI strategy call is a 15-minute working session where we build your 12-month GEO
             playbook together. Output is the Phase 3 deliverable from Query #5, built for YOUR
             market. One call, one plan, then you execute.
           </p>
