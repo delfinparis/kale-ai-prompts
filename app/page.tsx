@@ -910,7 +910,7 @@ function BeforeAfterExample() {
           textAlign: "center",
         }}
       >
-        See it in action
+        See the difference
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
@@ -924,7 +924,7 @@ function BeforeAfterExample() {
               marginBottom: 6,
             }}
           >
-            Without AI
+            Before
           </p>
           <div
             style={{
@@ -2020,6 +2020,17 @@ export default function Home() {
         <section
           style={{ paddingTop: 48, paddingBottom: 8, textAlign: "center" }}
         >
+          <p
+            style={{
+              fontSize: 13,
+              color: "#64748b",
+              fontStyle: "italic",
+              marginBottom: 14,
+              letterSpacing: "0.01em",
+            }}
+          >
+            When you open ChatGPT and have no idea what to type.
+          </p>
           <h1
             className={spaceGrotesk.className}
             style={{
@@ -2053,9 +2064,12 @@ export default function Home() {
         {/* Global search - always visible */}
         <GlobalSearch prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
 
-        {/* HOME: Social proof + Onboarding + Quick Picks + Top This Week + Before/After */}
+        {/* HOME: Before/After + Social proof + Onboarding + Quick Picks + Top This Week */}
         {isHome && (
           <section className="fade-in">
+            {/* Before/After - shown first so the problem is visible above the fold */}
+            <BeforeAfterExample />
+
             {/* Social Proof */}
             <SocialProofStrip />
 
@@ -2140,11 +2154,6 @@ export default function Home() {
 
             {/* Difficulty Legend */}
             <DifficultyLegend />
-
-            {/* Before/After Example */}
-            <div style={{ marginTop: 20 }}>
-              <BeforeAfterExample />
-            </div>
 
             {/* Favorites */}
             {favoritePrompts.length > 0 && (
