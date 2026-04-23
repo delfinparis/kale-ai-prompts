@@ -13,7 +13,7 @@ const QUOTES = [
     author: "Team lead, Southern California",
   },
   {
-    text: "Finally — prompts that don't sound like a robot wrote them. My past clients actually reply now.",
+    text: "Finally - prompts that don't sound like a robot wrote them. My past clients actually reply now.",
     author: "Solo agent, Chicago",
   },
   {
@@ -117,7 +117,7 @@ export default function SocialProofStrip() {
           &ldquo;{q.text}&rdquo;
         </div>
         <div style={{ fontSize: 11, color: "#64748b", letterSpacing: 0.3 }}>
-          — {q.author}
+          - {q.author}
         </div>
       </div>
     </div>

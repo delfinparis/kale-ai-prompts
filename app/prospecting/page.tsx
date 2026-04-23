@@ -31,7 +31,7 @@ Using deep web research, build a one-page pre-listing dossier on this homeowner 
 CONSTRAINTS:
 - Use only publicly available sources. No scraping, no paid databases.
 - Clearly flag every piece of information as either VERIFIED (with source link) or INFERRED (with reasoning).
-- Do not fabricate any fact. If you cannot find something, say "not found" — do not invent.
+- Do not fabricate any fact. If you cannot find something, say "not found" - do not invent.
 - Keep the final dossier to one page.
 
 RULES FOR THE DOSSIER:
@@ -52,16 +52,16 @@ A one-page brief with: HEADLINE INSIGHT, SELLER SNAPSHOT (VERIFIED/INFERRED tags
     bestFor: "Any agent with a CRM export.",
     timeToRun: "~4 minutes",
     query: `ROLE:
-You are a top-producing real estate coach who specializes in database reactivation. You have seen thousands of agent CRMs. Your job is to tell an agent which 10 people to call this week — and why — based entirely on their database.
+You are a top-producing real estate coach who specializes in database reactivation. You have seen thousands of agent CRMs. Your job is to tell an agent which 10 people to call this week - and why - based entirely on their database.
 
 CONTEXT:
 Today's date is [INSERT TODAY'S DATE]. Attached is my CRM export as a CSV. Columns: name, phone, email, last_contact_date, source, tags, freeform_notes, city, year_purchased, purchase_price, estimated_current_value, birthday, life_event_notes.
 
 TASK:
-Score every contact 1–100 on probability of transacting in the next 6 months. Return the top 10 as a prioritized call list.
+Score every contact 1-100 on probability of transacting in the next 6 months. Return the top 10 as a prioritized call list.
 
 SCORING WEIGHTS:
-1. Years in home: 5–9 years = peak sell probability. Weight: 25%.
+1. Years in home: 5-9 years = peak sell probability. Weight: 25%.
 2. Equity position: >40% equity = high. Weight: 20%.
 3. Life-event signals in notes: baby, divorce, marriage, promotion, retire, empty nest, relocation, new job, illness, inheritance, aging parent. Also detect implied signals: space complaints ("too small"), commute complaints, investment intent. Weight: 25%.
 4. Recency decay: not touched in 120+ days = penalty, unless life-event overrides. Weight: 10%.
@@ -94,13 +94,13 @@ CONTEXT:
 Below are raw CRM notes from leads I have not contacted in 18+ months. I believe at least 20% of them are still in the market or know someone who is. I want to re-engage them like an old friend reaching out, not a desperate agent rebooting a dead database.
 
 NOTES DUMP:
-[PASTE ALL NOTES HERE — one lead per block, name first]
+[PASTE ALL NOTES HERE - one lead per block, name first]
 
 TASK:
 For every lead in the dump, do three things:
 
 1. RECONSTRUCT (2 sentences): who this person was, what they wanted, what was blocking them.
-2. AGE-FORWARD: assume 18–36 months have passed. What has probably changed? Be specific and reasonable.
+2. AGE-FORWARD: assume 18-36 months have passed. What has probably changed? Be specific and reasonable.
 3. REACTIVATE: write a four-touch sequence:
    - Touch 1: 2-sentence text. References one specific detail. Does NOT mention real estate.
    - Touch 2 (day 3 if no reply): 90-word email. Offers one useful piece of information.
@@ -112,7 +112,7 @@ CONSTRAINTS:
 - Never apologize for the time gap.
 - Never "crazy market" or "interest rates."
 - Match the tone of the original notes.
-- If note is too thin (under 10 meaningful words): output "NOT ENOUGH TO PERSONALIZE — skip or scrub."
+- If note is too thin (under 10 meaningful words): output "NOT ENOUGH TO PERSONALIZE - skip or scrub."
 
 RULES FOR OUTPUT:
 Summary table first: lead name, re-engageable confidence (High/Medium/Low), strongest hook.
@@ -131,10 +131,10 @@ Summary table, then per-lead sequences in input order.`,
 You are a real estate intelligence analyst who specializes in tracing entity-owned properties back to the human decision-makers behind them. You use only publicly available sources.
 
 CONTEXT:
-In my farm area — [CITY/NEIGHBORHOOD], [STATE] — a growing percentage of properties are owned by business entities (LLCs, Incs, LPs, trusts). Tax records show the entity name but not the human. I want to identify the actual people as potential sellers, repeat buyers, and referral sources. These are investors and business owners, not distressed homeowners — they welcome good agents.
+In my farm area - [CITY/NEIGHBORHOOD], [STATE] - a growing percentage of properties are owned by business entities (LLCs, Incs, LPs, trusts). Tax records show the entity name but not the human. I want to identify the actual people as potential sellers, repeat buyers, and referral sources. These are investors and business owners, not distressed homeowners - they welcome good agents.
 
 INPUT:
-[Paste 5–25 entity names + property addresses. Columns: Entity Name | Entity Type | Property Address | Assessed Value | Year Acquired]
+[Paste 5-25 entity names + property addresses. Columns: Entity Name | Entity Type | Property Address | Assessed Value | Year Acquired]
 
 TASK:
 For each entity, trace it back to its human principal using only public sources.
@@ -147,13 +147,13 @@ STEP 4: Search for OTHER entities formed by the same human. This reveals portfol
 CONSTRAINTS:
 - Public sources only. No paid skip-trace.
 - Flag each item as VERIFIED (with source link) or INFERRED.
-- If trail goes cold, say so — don't invent a name.
+- If trail goes cold, say so - don't invent a name.
 - Same workflow for all entity types.
 
 RULES FOR OUTPUT:
 For each entity, return:
 - Entity Name, Type, Property Address
-- Decision-Maker Name (or "trail cold — next step")
+- Decision-Maker Name (or "trail cold - next step")
 - Confidence: High / Medium / Low
 - How I found them (2 sentences, with source links)
 - Portfolio signal: other entities/properties
@@ -171,10 +171,10 @@ Table, one entity per row. Separate "trail cold" section at bottom with next-ste
     bestFor: "Every agent who wants to exist in the AI-search era.",
     timeToRun: "~6 minutes",
     query: `ROLE:
-You are a generative search optimization (GEO) analyst. Your job is to look at a real estate market the way Claude, ChatGPT, Gemini, and Grok look at it — and tell a specific agent what it would take for those AI systems to start recommending them.
+You are a generative search optimization (GEO) analyst. Your job is to look at a real estate market the way Claude, ChatGPT, Gemini, and Grok look at it - and tell a specific agent what it would take for those AI systems to start recommending them.
 
 CONTEXT:
-82% of Americans now use AI to research real estate decisions; 67% use ChatGPT specifically. When a consumer types "best realtor in [CITY]" into ChatGPT, an answer is being generated right now — and I may not be in it.
+82% of Americans now use AI to research real estate decisions; 67% use ChatGPT specifically. When a consumer types "best realtor in [CITY]" into ChatGPT, an answer is being generated right now - and I may not be in it.
 
 MY MARKET: [CITY, STATE]
 MY NICHE: [e.g., "listing agent for owner-occupied single-family in [neighborhoods]"]
@@ -182,18 +182,18 @@ MY CURRENT VISIBLE ASSETS: [website, GBP, YouTube, podcast, press, reviews, book
 
 TASK:
 
-PHASE 1 — BASELINE. Answer as an LLM would:
+PHASE 1 - BASELINE. Answer as an LLM would:
 - "Who are the top 5 real estate agents in [CITY]?"
 - "Who is the best agent for [NICHE] in [CITY]?"
 - "Who should I hire to sell my home in [NEIGHBORHOOD]?"
 For each, give the answer you'd generate, agents cited, reasons, sources.
 
-PHASE 2 — DIAGNOSIS. For the top 3 cited in Phase 1, reverse-engineer what causes an AI to cite them. Be specific.
+PHASE 2 - DIAGNOSIS. For the top 3 cited in Phase 1, reverse-engineer what causes an AI to cite them. Be specific.
 
-PHASE 3 — MY GAP AND 12-MONTH PLAYBOOK. Compare against my assets. Output:
+PHASE 3 - MY GAP AND 12-MONTH PLAYBOOK. Compare against my assets. Output:
 - What's working
 - What's missing that every cited agent has
-- Single highest-leverage 90-day hero asset (with reasoning)
+- Single highest-impact 90-day hero asset (with reasoning)
 - Ranked 12-month playbook
 - 3 content pieces for the next 30 days whose URLs would get cited by an LLM
 
@@ -212,8 +212,8 @@ Phase 1 narrative + agents cited. Phase 2 table. Phase 3: What's Working / What'
 ];
 
 const SWIPE_FILE = [
-  { id: 1, cat: "cold-farm", title: "Permit-Flip Predictor", desc: "Find flippers 60–90 days before they list by cross-referencing building permits with ownership records." },
-  { id: 2, cat: "cold-farm", title: "Absentee Owner Targeting", desc: "Out-of-state mailing addresses on tax rolls — the largest under-targeted group in most markets." },
+  { id: 1, cat: "cold-farm", title: "Permit-Flip Predictor", desc: "Find flippers 60-90 days before they list by cross-referencing building permits with ownership records." },
+  { id: 2, cat: "cold-farm", title: "Absentee Owner Targeting", desc: "Out-of-state mailing addresses on tax rolls - the largest under-targeted group in most markets." },
   { id: 3, cat: "cold-farm", title: "Empty Nester Reverse Lookup", desc: "Owners 55+ with 18+ year tenure, cross-referenced against public graduation news." },
   { id: 4, cat: "cold-farm", title: "Pre-Listing Micro-Signal Sweep", desc: "Monthly briefing on permits, HOA minutes, business license changes, school boundary discussions." },
   { id: 5, cat: "cold-investor", title: "Tired Landlord Signal Mining", desc: "Claude analyzes public rental listings for burnout signals: re-lists, rent drops, complaint-laden descriptions." },
@@ -221,7 +221,7 @@ const SWIPE_FILE = [
   { id: 7, cat: "cold-investor", title: "Short-Term Rental Operator Outreach", desc: "Public Airbnb/VRBO listings cross-referenced with assessor records to identify STR operators." },
   { id: 8, cat: "cold-investor", title: "REIA Meetup Intel Brief", desc: "Walk into any real estate investor meetup with a specific game plan, not as a generic networker." },
   { id: 9, cat: "cold-niche", title: "Relocating Executive LinkedIn Query Builder", desc: "Exact Boolean search strings for LinkedIn and Sales Navigator to find recently-relocated execs." },
-  { id: 10, cat: "cold-niche", title: "Medical Residency Match Day Calendar", desc: "March matches, June moves. 100–500 incoming residents per teaching hospital, on a predictable schedule." },
+  { id: 10, cat: "cold-niche", title: "Medical Residency Match Day Calendar", desc: "March matches, June moves. 100-500 incoming residents per teaching hospital, on a predictable schedule." },
   { id: 11, cat: "cold-niche", title: "PCS Season Military Farming", desc: "Base-specific rotation cycle, BAH rates, 12-month outreach calendar." },
   { id: 12, cat: "cold-niche", title: "Corporate Relocation Pipeline", desc: "Companies announcing new offices or 50+ hires. Get to the relocation list before they do." },
   { id: 13, cat: "cold-visibility", title: "Competitor Agent Weakness Audit", desc: "24-month analysis of a dominant competitor. 5 positioning statements that exploit their gaps." },
@@ -304,9 +304,9 @@ export default function ProspectingPage() {
               marginBottom: 16,
             }}
           >
-            AI is not a content tool.
+            Stop using AI to write posts.
             <br />
-            It&apos;s a{" "}
+            Start using it to{" "}
             <span
               style={{
                 background: "linear-gradient(135deg, #10b981, #38bdf8)",
@@ -314,13 +314,13 @@ export default function ProspectingPage() {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              prospecting intelligence
-            </span>{" "}
-            tool.
+              find your next client
+            </span>
+            .
           </h1>
           <p style={{ fontSize: 16, color: "#94a3b8", lineHeight: 1.5, maxWidth: 560, margin: "0 auto" }}>
-            5 queries that the other 99% of agents don&apos;t know about. Plus 21 more in the swipe file.
-            All copy-paste ready. All run in Claude for $20/mo.
+            5 queries that most agents have never seen. Plus 21 more in the swipe file.
+            Copy-paste ready. Runs in Claude for $20/mo.
           </p>
         </div>
 
@@ -649,7 +649,7 @@ export default function ProspectingPage() {
               fontStyle: "italic",
             }}
           >
-            Full queries (ROLE / CONTEXT / TASK / CONSTRAINTS / RULES / OUTPUT) available on request — they
+            Full queries (ROLE / CONTEXT / TASK / CONSTRAINTS / RULES / OUTPUT) available on request - they
             live in the GitHub repo linked below.
           </p>
         </div>

@@ -14,7 +14,7 @@ interface Props {
 type AITool = {
   id: "claude" | "chatgpt" | "gemini" | "grok";
   name: string;
-  // Web URL — on iOS/Android this triggers Universal Links / App Links
+  // Web URL - on iOS/Android this triggers Universal Links / App Links
   // into the native app when installed; falls back to browser otherwise.
   url: string;
   // Brand color (used in subtle accents, not backgrounds)
@@ -88,11 +88,11 @@ export default function OpenInAI({ promptText, promptId, label }: Props) {
     const platform = detectPlatform();
     setMenuOpen(false);
 
-    // Copy prompt to clipboard first — this is the transfer mechanism
+    // Copy prompt to clipboard first - this is the transfer mechanism
     try {
       await navigator.clipboard.writeText(promptText);
     } catch {
-      // If clipboard fails, still proceed — user can copy from the source page
+      // If clipboard fails, still proceed - user can copy from the source page
     }
 
     setPreferred(tool.id);
@@ -146,7 +146,7 @@ export default function OpenInAI({ promptText, promptId, label }: Props) {
           {buttonLabel}
         </button>
 
-        {/* Chevron — opens picker */}
+        {/* Chevron - opens picker */}
         <button
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Choose AI tool"
@@ -252,7 +252,7 @@ export default function OpenInAI({ promptText, promptId, label }: Props) {
                 marginTop: 4,
               }}
             >
-              Opens the web app — on mobile with the app installed, iOS/Android route you into the native app.
+              Opens the web app - on mobile with the app installed, iOS/Android route you into the native app.
             </div>
           </div>
         )}

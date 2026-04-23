@@ -8,7 +8,7 @@ const STRATEGIES = [
     number: "1",
     superpower: "PRACTICE",
     title: "The Midnight Sales Coach",
-    desc: "AI plays a realistic client and coaches you after every response. Hidden motivations, trap questions, and a scorecard at the end.",
+    desc: "AI plays a realistic client and coaches you after every response. Hidden motivations. Trap questions. A scorecard at the end.",
     path: "Coach Me Through It → Roleplay & Practice → Seller Roleplays",
     promptIds: ["ch8-1", "ch8-2", "ch8-3", "ch8-4"],
     color: "#7c3aed",
@@ -44,7 +44,7 @@ const STRATEGIES = [
     number: "5",
     superpower: "THINK",
     title: "Own Your Zip Code in 30 Minutes",
-    desc: "7 fully written, hyper-local social media posts — not topic ideas, actual posts. One prompt, one week of content.",
+    desc: "7 fully written, hyper-local social media posts - not topic ideas, actual posts. One prompt, one week of content.",
     path: "Write Something For Me → Social Media & Content",
     promptIds: ["ch0-2", "ch0-3"],
     color: "#38bdf8",
@@ -53,23 +53,23 @@ const STRATEGIES = [
 
 const QUICK_STARTS = [
   {
-    label: "New Agent (0–2 years)",
+    label: "New Agent (0-2 years)",
     action: "Start with Chapter 0 → 10 prompts, 20 minutes, immediate results",
     path: "/",
   },
   {
-    label: "Mid-Career (3–7 years)",
+    label: "Mid-Career (3-7 years)",
     action: "Start with Strategy 1 (Roleplay) or Strategy 3 (Objection Vault)",
     path: "/",
   },
   {
     label: "Top Producer (20+ deals)",
-    action: "Start with Strategy 2 (Client Brief) — upgrade how you win appointments",
+    action: "Start with Strategy 2 (Client Brief) - upgrade how you win appointments",
     path: "/",
   },
   {
     label: "Team Lead",
-    action: "Send the Roleplay prompts to your agents — review scorecards at your next team meeting",
+    action: "Send the Roleplay prompts to your agents - review scorecards at your next team meeting",
     path: "/",
   },
 ];
@@ -125,7 +125,7 @@ export default function WebinarPage() {
             </span>
           </h1>
           <p style={{ fontSize: 15, color: "#94a3b8", lineHeight: 1.5 }}>
-            Here are the 5 strategies from the webinar — plus direct links to
+            Here are the 5 strategies from the webinar - plus direct links to
             related prompts in the vault. Pick one. Try it tonight.
           </p>
         </div>
@@ -164,7 +164,7 @@ export default function WebinarPage() {
                 }}
               />
               <span style={{ fontWeight: 700, color: s.color }}>{s.label}</span>
-              <span>— {s.desc}</span>
+              <span>- {s.desc}</span>
             </div>
           ))}
         </div>

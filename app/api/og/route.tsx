@@ -100,7 +100,7 @@ export async function GET() {
             display: "flex",
           }}
         >
-          Copy-paste prompts that write your emails, listings, follow-ups, and scripts — so you don't have to.
+          Copy-paste prompts for emails, listings, follow-ups, scripts. Stop staring at the blank screen.
         </div>
 
         {/* Category pills */}

@@ -37,7 +37,7 @@ export default function FeedbackWidget({ promptId, onClose }: Props) {
     } catch {
       // ignore
     }
-    // Optional server log — fires and forgets
+    // Optional server log - fires and forgets
     try {
       await fetch("/api/capture-email", {
         method: "POST",
@@ -77,7 +77,7 @@ export default function FeedbackWidget({ promptId, onClose }: Props) {
     >
       {submitted ? (
         <span style={{ fontSize: 13, color: "#34d399", fontWeight: 600 }}>
-          Thanks — noted.
+          Thanks - noted.
         </span>
       ) : (
         <>

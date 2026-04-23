@@ -77,7 +77,7 @@ export default function StrategyCallFooter() {
             Want help building your AI system?
           </div>
           <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.3 }}>
-            1:1 strategy call with D.J. — 45 min, built for your market
+            1:1 strategy call with D.J. - 45 min, built for your market
           </div>
         </div>
         <a
