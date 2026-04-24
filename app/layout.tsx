@@ -6,24 +6,27 @@ import "./globals.css";
 const GTM_ID = "GTM-P6MPH7";
 
 export const metadata: Metadata = {
-  title: "Copy That. — 570 AI Prompts for Real Estate Agents",
+  title: "Copy That. | 570 AI Prompts for Real Estate Agents",
   description:
-    "Copy. Paste. Close more deals. 570 ready-to-go ChatGPT, Claude, and Gemini prompts built for real estate agents. Listings, follow-ups, lead gen, scripts, coaching roleplays. Used by 2,000+ agents.",
+    "570 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
   metadataBase: new URL("https://tapthis.co"),
   keywords: [
-    "AI prompts for realtors",
+    "AI prompts for real estate agents",
     "real estate AI prompts",
-    "ChatGPT prompts real estate",
-    "AI for real estate agents",
-    "real estate scripts",
-    "realtor AI tools",
-    "listing description generator",
+    "ChatGPT prompts for realtors",
+    "Claude prompts for real estate",
+    "Gemini prompts for realtors",
+    "real estate listing description generator",
+    "cold outreach for realtors",
     "real estate email templates",
+    "real estate follow-up scripts",
+    "AI cheat sheet real estate",
+    "realtor AI tools",
   ],
   openGraph: {
-    title: "Copy That. — The AI Cheat Sheet for Real Estate Agents",
+    title: "Copy That. | The AI Cheat Sheet for Real Estate Agents",
     description:
-      "Copy. Paste. Close more deals. 570 ready-to-go AI prompts for emails, listings, follow-ups, and scripts. Built by agents for agents.",
+      "570 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
     url: "https://tapthis.co",
     siteName: "Copy That.",
     images: [
@@ -31,16 +34,16 @@ export const metadata: Metadata = {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "Copy That. — 570 copy-paste AI prompts for real estate agents",
+        alt: "Copy That. 570 copy-paste AI prompts for real estate agents.",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Copy That. — 570 AI Prompts for Real Estate Agents",
+    title: "Copy That. | 570 AI Prompts for Real Estate Agents",
     description:
-      "Copy. Paste. Close more deals. 570 ready-to-go AI prompts for working real estate agents.",
+      "570 copy-paste AI prompts for real estate agents. For ChatGPT, Claude, and Gemini.",
     images: ["/api/og"],
   },
 };

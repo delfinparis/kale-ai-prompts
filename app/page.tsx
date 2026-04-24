@@ -2085,7 +2085,7 @@ export default function Home() {
                 marginBottom: 10,
               }}
             >
-              Try one now — no signup
+              Try one now. No signup.
             </p>
             <p
               className={spaceGrotesk.className}
@@ -2256,7 +2256,7 @@ export default function Home() {
                   marginBottom: 14,
                 }}
               >
-                15 minutes with D.J. — we map what AI could be doing for your
+                15 minutes with D.J. We map what AI could be doing for your
                 pipeline, specific to your market.
               </p>
               <a
@@ -2690,7 +2690,7 @@ export default function Home() {
             Built by agents, for agents
           </p>
           <p style={{ fontSize: 12, color: "#475569", marginBottom: 4 }}>
-            {prompts.length} prompts used by 2,000+ real estate professionals
+            {prompts.length} ready-to-go AI prompts for real estate agents
           </p>
           <p style={{ fontSize: 12, color: "#475569" }}>
             &copy; 2026 DJP3 Consulting Inc.
