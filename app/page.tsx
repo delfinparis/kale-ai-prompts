@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { spaceGrotesk } from "./fonts";
 import promptsData from "../data/prompts.json";
-import SocialProofStrip from "./components/SocialProofStrip";
 import GlobalSearch from "./components/GlobalSearch";
 import TopThisWeek from "./components/TopThisWeek";
 import StrategyCallFooter from "./components/StrategyCallFooter";
@@ -760,233 +759,6 @@ function OnboardingBanner({ onDismiss }: { onDismiss: () => void }) {
             )}
           </div>
         ))}
-      </div>
-    </div>
-  );
-}
-
-function DifficultyLegend() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-        justifyContent: "center",
-        marginBottom: 6,
-        marginTop: -8,
-      }}
-    >
-      {(["beginner", "intermediate", "advanced"] as const).map((d) => (
-        <div
-          key={d}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 5,
-            fontSize: 11,
-            color: "#64748b",
-          }}
-        >
-          <span
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: "50%",
-              background: DIFFICULTY_COLORS[d],
-            }}
-          />
-          {DIFFICULTY_LABELS[d]}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const BEFORE_AFTERS = [
-  {
-    before: "Hi, just checking in to see if you\u2019re still interested in buying a home. Let me know if you have any questions!",
-    after: "Sarah, last time we chatted you were debating between Lincoln Park and Lakeview - did that new coffee shop on Armitage tip the scales? I just listed a 2BR that checks every box you mentioned. Worth a peek?",
-  },
-  {
-    before: "Beautiful 3BR/2BA home for sale. Great location, move-in ready. Call for details!",
-    after: "Wake up to morning light flooding your chef\u2019s kitchen while the kids walk two blocks to Lincoln Elementary. This 3BR/2BA on tree-lined Maple Ave was renovated in 2024 with quartz counters, white oak floors, and a backyard built for summer BBQs. Open house Saturday 1-3.",
-  },
-  {
-    before: "Thanks for coming to the open house today! Let me know if you have any questions about the property.",
-    after: "Great meeting you today, Mike! You mentioned wanting a bigger backyard for your golden retriever - this home\u2019s half-acre lot is fully fenced. I pulled two more listings nearby with similar yards. Want me to send them over?",
-  },
-  {
-    before: "Just wanted to follow up from our showing last week. Are you still interested?",
-    after: "Hey David - that Craftsman on Elm we toured last Thursday just had a price drop of $15K. You mentioned it was your favorite layout but the price felt high. Want to take another look before the weekend rush?",
-  },
-  {
-    before: "I hope you\u2019re enjoying your new home! Let me know if you ever need anything.",
-    after: "Happy 1-year homeiversary, Jen! Your neighborhood just saw a 6% increase in values since you bought - great timing. I put together a quick equity snapshot for you. Also, my painter just finished a job on your street and has openings - want his number?",
-  },
-  {
-    before: "I\u2019m a local real estate agent. If you or anyone you know is looking to buy or sell, please keep me in mind!",
-    after: "I helped 3 families on your street find their homes last year. Your neighbor on Maple just got $40K over asking using my pre-listing renovation strategy. I\u2019d love to share what I\u2019m seeing in your micro-market - coffee on me?",
-  },
-  {
-    before: "The inspection report came back with some issues. Let\u2019s discuss.",
-    after: "Great news - the inspection found mostly cosmetic items. The two things worth discussing: the water heater is 12 years old (avg lifespan is 10-15) and there\u2019s minor grading near the foundation. I\u2019ve already gotten repair estimates for both. Here\u2019s my recommendation for the repair request\u2026",
-  },
-  {
-    before: "Your home has been on the market for 30 days. We should talk about a price reduction.",
-    after: "Here\u2019s your 30-day market report: 847 views online, 12 showings, 3 second showings, 0 offers. The feedback trend is clear - buyers love the kitchen but feel the price is $20-25K above comparable sales. A strategic adjustment to $475K would put us in the sweet spot. Here\u2019s why\u2026",
-  },
-  {
-    before: "Do you have any referrals for me? I\u2019d really appreciate it!",
-    after: "Lisa, remember when you told me your coworker was thinking about downsizing? I just listed a low-maintenance condo that might be perfect for her situation. Would it be weird if I reached out, or would you rather make the intro?",
-  },
-  {
-    before: "I\u2019m reaching out to see if you\u2019re interested in selling your home.",
-    after: "Your home on Oak Street is one of 3 mid-century ranches in the neighborhood - and the other two sold for $50K more than expected this spring. I ran a quick analysis on yours. Even with zero updates, you\u2019re sitting on significant equity. Curious what the number looks like?",
-  },
-  {
-    before: "Here\u2019s a new listing I thought you might like. 4BR, 3BA, $550K.",
-    after: "Remember your wish list? Big kitchen, walkable to school, under $575K. This one just hit the market 20 minutes ago: 4BR/3BA with a 15-foot island, 3 blocks from Roosevelt Elementary, listed at $550K. The seller is motivated and accepting showings starting tomorrow. Want the first slot?",
-  },
-  {
-    before: "I know you said you\u2019re not ready to buy yet, but the market is really good right now.",
-    after: "No rush at all, Maria - but I wanted to flag something. Rates just dipped to 6.2% this week, which drops your monthly payment by $180 vs. last month. At your price range, that\u2019s $65K more buying power. I set up a saved search so you\u2019ll see anything that hits before the weekend crowd.",
-  },
-  {
-    before: "We got multiple offers on your listing. Let\u2019s talk.",
-    after: "Exciting news - 5 offers came in, ranging from $485K to $520K. I\u2019ve built a side-by-side comparison covering price, contingencies, closing timeline, financing strength, and escalation clauses. Two stand out for different reasons. Let\u2019s hop on a call at 4pm to walk through your options.",
-  },
-  {
-    before: "Happy holidays from your favorite Realtor! Hope you have a great year!",
-    after: "Tom, I know you mentioned wanting to build a deck last spring - my contractor just finished one similar to what you described and has a winter discount. Also, your neighborhood appreciation is up 8% this year. I\u2019ll drop off your annual home equity report next week - the numbers will make you smile.",
-  },
-  {
-    before: "Check out my new listing! Great home in a great neighborhood!",
-    after: "POV: You\u2019re sipping coffee on this wraparound porch while your kids ride bikes on the quietest cul-de-sac in Westfield. 4 beds, a home office with built-ins, and a backyard with a firepit that\u2019s hosted 100+ neighborhood s\u2019mores nights. Open house Sunday 12-2. Link in bio.",
-  },
-  {
-    before: "I\u2019d love to help you sell your home. I have a lot of experience in the area.",
-    after: "In the last 12 months, I\u2019ve sold 8 homes within a mile of yours - averaging 4.2% over asking and 11 days on market. My pre-listing prep process (staging, photography, pricing strategy) is why my sellers net $23K more on average. Want me to walk you through exactly what I\u2019d do for your home?",
-  },
-  {
-    before: "Sorry to hear the appraisal came in low. Let\u2019s figure out what to do.",
-    after: "The appraisal came in at $465K vs. our $485K contract price. Before we panic: I\u2019ve already pulled 3 comparable sales the appraiser missed and drafted a rebuttal with supporting data. Option A: challenge the appraisal. Option B: split the difference. Option C: renegotiate. Here\u2019s my recommendation\u2026",
-  },
-  {
-    before: "I haven\u2019t heard from you in a while. Are you still looking to buy?",
-    after: "Hey Chris - I just drove past that Tudor on Park Ave you were obsessed with 6 months ago. Still there, and they just dropped the price 12%. Totally understand if your plans changed, but if the timing is better now, I can get us in this weekend before it gets picked up.",
-  },
-  {
-    before: "Just listed! Contact me for more information about this property.",
-    after: "JUST LISTED: The kitchen that made 3 contractors say \u201Cwhoever did this knew what they were doing.\u201D This 1920s brick colonial got a top-to-bottom renovation with original details preserved - crown molding, hardwood, arched doorways - plus a chef\u2019s kitchen with La Cornue range. First showing block is Friday.",
-  },
-  {
-    before: "I\u2019m a new agent but I\u2019m really passionate about real estate!",
-    after: "I may be newer to real estate, but here\u2019s what I bring: I respond to every inquiry within 5 minutes, I\u2019ve completed 60+ hours of negotiation training, and I\u2019m backed by a team that\u2019s closed 200+ transactions. My clients get senior-level strategy with someone who will outwork everyone. Let me prove it.",
-  },
-];
-
-function BeforeAfterExample() {
-  const [example, setExample] = useState(BEFORE_AFTERS[0]);
-
-  useEffect(() => {
-    setExample(BEFORE_AFTERS[Math.floor(Math.random() * BEFORE_AFTERS.length)]);
-  }, []);
-
-  return (
-    <div
-      style={{
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.06)",
-        borderRadius: 14,
-        padding: "20px",
-        marginBottom: 32,
-      }}
-    >
-      <p
-        style={{
-          fontSize: 13,
-          fontWeight: 600,
-          color: "#64748b",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-          marginBottom: 14,
-          textAlign: "center",
-        }}
-      >
-        See the difference
-      </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div>
-          <p
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              color: "#ef4444",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              marginBottom: 6,
-            }}
-          >
-            Before
-          </p>
-          <div
-            style={{
-              background: "rgba(239,68,68,0.06)",
-              border: "1px solid rgba(239,68,68,0.12)",
-              borderRadius: 10,
-              padding: "12px 14px",
-              fontSize: 13,
-              color: "#94a3b8",
-              lineHeight: 1.5,
-              fontStyle: "italic",
-            }}
-          >
-            &ldquo;{example.before}&rdquo;
-          </div>
-        </div>
-        <div style={{ textAlign: "center" }}>
-          <svg
-            width={16}
-            height={16}
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="#38bdf8"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="8" y1="3" x2="8" y2="13" />
-            <polyline points="4 9 8 13 12 9" />
-          </svg>
-        </div>
-        <div>
-          <p
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              color: "#10b981",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              marginBottom: 6,
-            }}
-          >
-            With Copy That.
-          </p>
-          <div
-            style={{
-              background: "rgba(16,185,129,0.06)",
-              border: "1px solid rgba(16,185,129,0.12)",
-              borderRadius: 10,
-              padding: "12px 14px",
-              fontSize: 13,
-              color: "#cbd5e1",
-              lineHeight: 1.5,
-              fontStyle: "italic",
-            }}
-          >
-            &ldquo;{example.after}&rdquo;
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -2019,7 +1791,8 @@ export default function Home() {
 
   return (
     <div style={{ minHeight: "100vh", padding: "0 16px" }}>
-      <div style={{ maxWidth: 640, margin: "0 auto" }}>
+      <div className="col-wide">
+        <div className="col-narrow">
         {/* Hero */}
         <section
           style={{ paddingTop: 48, paddingBottom: 8, textAlign: "center" }}
@@ -2124,29 +1897,19 @@ export default function Home() {
 
         {/* Global search - always visible */}
         <GlobalSearch prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
+        </div>
 
-        {/* HOME: Before/After + Social proof + Onboarding + Quick Picks + Top This Week */}
+        {/* HOME: Onboarding + Quick Picks + Top This Week + bridge + Favorites */}
         {isHome && (
           <section className="fade-in">
-            {/* Before/After - shown first so the problem is visible above the fold */}
-            <BeforeAfterExample />
-
-            {/* Social Proof */}
-            <SocialProofStrip />
-
             {/* Onboarding Banner */}
             {showOnboarding && (
-              <OnboardingBanner onDismiss={handleDismissOnboarding} />
+              <div className="col-narrow">
+                <OnboardingBanner onDismiss={handleDismissOnboarding} />
+              </div>
             )}
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 12,
-                marginBottom: 20,
-              }}
-            >
+            <div className="quick-picks-grid" style={{ marginBottom: 20 }}>
               {QUICK_PICKS.map((qp) => (
                 <button
                   key={qp.id}
@@ -2214,6 +1977,7 @@ export default function Home() {
             <TopThisWeek prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
 
             {/* Mid-scroll bridge to the 15-min strategy call. */}
+            <div className="col-narrow">
             <div
               style={{
                 background: "rgba(255,255,255,0.03)",
@@ -2289,9 +2053,7 @@ export default function Home() {
                 Book a 15-min call →
               </a>
             </div>
-
-            {/* Difficulty Legend */}
-            <DifficultyLegend />
+            </div>
 
             {/* Favorites */}
             {favoritePrompts.length > 0 && (
@@ -2443,7 +2205,7 @@ export default function Home() {
 
         {/* SUBCATEGORY PICKER */}
         {isPickingSubcategory && (
-          <section className="fade-in">
+          <section className="fade-in col-narrow">
             <div
               style={{
                 display: "flex",
@@ -2568,7 +2330,7 @@ export default function Home() {
 
         {/* SUBGROUP PICKER (third level) */}
         {needsSubgroupPicker && currentSubcategory && (
-          <section className="fade-in">
+          <section className="fade-in col-narrow">
             <div
               style={{
                 display: "flex",
@@ -2611,7 +2373,7 @@ export default function Home() {
 
         {/* PROMPT LIST */}
         {isViewingPrompts && (
-          <section className="fade-in">
+          <section className="fade-in col-narrow">
             <div
               style={{
                 display: "flex",
@@ -2644,8 +2406,6 @@ export default function Home() {
               </span>
             </div>
 
-            <DifficultyLegend />
-
             <div
               style={{
                 display: "flex",
@@ -2673,6 +2433,7 @@ export default function Home() {
 
         {/* Credibility Footer */}
         <footer
+          className="col-narrow"
           style={{
             padding: "32px 0",
             textAlign: "center",

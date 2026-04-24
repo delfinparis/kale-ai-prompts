@@ -85,13 +85,7 @@ export default function TopThisWeek<T extends TopPrompt>({ prompts, onNavigateTo
         </span>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr",
-          gap: 8,
-        }}
-      >
+      <div className="top-list-grid">
         {topPrompts.map((p, idx) => (
           <button
             key={p.id}

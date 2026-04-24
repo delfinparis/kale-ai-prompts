@@ -51,6 +51,42 @@ body {
   border-radius: 3px;
 }
 
+/* Layout rails: narrow for focused message content, wide for browse grids. */
+.col-narrow {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.col-wide {
+  max-width: 1040px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive grid for Quick Picks - 2 columns on mobile, 4 on desktop. */
+.quick-picks-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (min-width: 880px) {
+  .quick-picks-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Responsive grid for Top This Week list. */
+.top-list-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+@media (min-width: 720px) {
+  .top-list-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 /* Prompt text bracket highlighting */
 .prompt-text mark {
   background: rgba(249, 115, 22, 0.15);
