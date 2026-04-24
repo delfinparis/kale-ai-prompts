@@ -5,6 +5,67 @@ import "./globals.css";
 
 const GTM_ID = "GTM-P6MPH7";
 
+const SITE_URL = "https://tapthis.co";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}#org`,
+      name: "Copy That.",
+      legalName: "DJP3 Consulting Inc.",
+      url: SITE_URL,
+      logo: `${SITE_URL}/api/og`,
+      sameAs: ["https://joinkale.com"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}#site`,
+      url: SITE_URL,
+      name: "Copy That.",
+      description:
+        "570 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
+      publisher: { "@id": `${SITE_URL}#org` },
+      inLanguage: "en-US",
+    },
+    {
+      "@type": "WebApplication",
+      "@id": `${SITE_URL}#app`,
+      name: "Copy That.",
+      alternateName: "Copy That. AI Cheat Sheet",
+      url: SITE_URL,
+      description:
+        "A library of 570 ready-to-use AI prompts built for real estate agents. Customize the brackets, copy, and paste into ChatGPT, Claude, or Gemini.",
+      applicationCategory: "BusinessApplication",
+      applicationSubCategory: "Real Estate AI Tools",
+      operatingSystem: "Any (web)",
+      browserRequirements: "Requires JavaScript. Works in any modern browser.",
+      isAccessibleForFree: true,
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      audience: {
+        "@type": "Audience",
+        audienceType: "Real estate agents",
+      },
+      featureList: [
+        "Listing descriptions that do not sound like a robot wrote them",
+        "Cold outreach texts and emails for dead leads",
+        "Post-showing follow-up emails",
+        "Objection-handling roleplays for listing appointments",
+        "Social media captions tailored to your market",
+        "CRM triage prompts to find overlooked opportunities",
+        "Prompt stacks that chain multiple prompts into workflows",
+      ],
+      creator: { "@id": `${SITE_URL}#org` },
+      publisher: { "@id": `${SITE_URL}#org` },
+    },
+  ],
+};
+
 export const metadata: Metadata = {
   title: "Copy That. | 570 AI Prompts for Real Estate Agents",
   description:
@@ -56,6 +117,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Script
           id="gtm-script"
           strategy="afterInteractive"
