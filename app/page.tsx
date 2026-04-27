@@ -854,7 +854,6 @@ function PromptCard({
   prompt,
   isExpanded,
   onToggle,
-  onCopy,
   isFavorited,
   onToggleFavorite,
   onNavigateToPrompt,
@@ -862,7 +861,6 @@ function PromptCard({
   prompt: Prompt;
   isExpanded: boolean;
   onToggle: () => void;
-  onCopy: (prompt: Prompt) => void;
   isFavorited: boolean;
   onToggleFavorite: (promptId: string) => void;
   onNavigateToPrompt: (prompt: Prompt) => void;
@@ -1116,37 +1114,12 @@ function PromptCard({
             </p>
           )}
 
-          <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
-            {/* Primary action - customize brackets, copy, open AI */}
+          <div style={{ marginTop: 16 }}>
             <OpenInAI
               promptText={prompt.quickStart || prompt.prompt}
               promptId={prompt.id}
               promptTitle={prompt.title}
             />
-            {/* Secondary: plain copy, for users who already have a tool open */}
-            <button
-              onClick={() => onCopy(prompt)}
-              style={{
-                padding: "10px 16px",
-                background: "rgba(255,255,255,0.04)",
-                color: "#94a3b8",
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 10,
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 6,
-              }}
-            >
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-              </svg>
-              Just copy (don&apos;t open app)
-            </button>
           </div>
 
           {/* Related prompts */}
@@ -1647,30 +1620,6 @@ export default function Home() {
       return next;
     });
   }, []);
-
-  const handleCopy = useCallback(
-    (prompt: Prompt) => {
-      if (!isUnlocked) {
-        // Progressive gate: allow FREE_COPY_LIMIT copies before the email wall
-        if (freeCopiesUsed < FREE_COPY_LIMIT) {
-          const next = freeCopiesUsed + 1;
-          setFreeCopiesUsed(next);
-          localStorage.setItem("prompt_vault_free_copies", String(next));
-          pushEvent("prompt_copy_free", {
-            prompt_id: prompt.id,
-            free_copy_number: String(next),
-          });
-          executeCopy(prompt);
-          return;
-        }
-        setPendingCopyPrompt(prompt);
-        setShowEmailModal(true);
-        return;
-      }
-      executeCopy(prompt);
-    },
-    [isUnlocked, freeCopiesUsed]
-  );
 
   const executeCopy = useCallback((prompt: Prompt) => {
     const textToCopy = prompt.quickStart || prompt.prompt;
@@ -2260,7 +2209,6 @@ export default function Home() {
                   prompt={p}
                   isExpanded={expandedId === p.id}
                   onToggle={() => handleToggle(p.id)}
-                  onCopy={handleCopy}
                   isFavorited={favorites.includes(p.id)}
                   onToggleFavorite={handleToggleFavorite}
                   onNavigateToPrompt={handleNavigateToPrompt}
