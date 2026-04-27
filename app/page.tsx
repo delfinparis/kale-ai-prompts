@@ -1789,9 +1789,9 @@ export default function Home() {
               marginBottom: 20,
             }}
           >
-            Copy. Paste. Close more deals. {prompts.length} ready-to-go prompts
-            for emails, listings, follow-ups, and scripts. Tap one of the
-            categories below!
+            We make your AI results 1000x better
+            <br />
+            Tap one of the categories below!
           </p>
         </section>
         </div>
