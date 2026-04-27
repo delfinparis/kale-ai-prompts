@@ -1789,7 +1789,7 @@ export default function Home() {
               marginBottom: 20,
             }}
           >
-            We make your AI results 1000x better
+            We make your AI results 1000x better.
             <br />
             Tap one of the categories below!
           </p>
