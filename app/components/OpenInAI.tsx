@@ -236,6 +236,14 @@ export default function OpenInAI({ promptText, promptId, label, promptTitle }: P
     });
     window.open(tool.url, "_blank", "noopener,noreferrer");
     setMode(null);
+    // Notify the global post-copy email capture, if any.
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("copythat:prompt-copied", {
+          detail: { promptId: promptId || "" },
+        }),
+      );
+    }
   };
 
   const retryCopy = async () => {

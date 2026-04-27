@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { inter } from "./fonts";
+import PostCopyEmailCapture from "./components/PostCopyEmailCapture";
 import "./globals.css";
 
 const GTM_ID = "GTM-P6MPH7";
@@ -143,6 +144,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         {children}
+        <PostCopyEmailCapture />
       </body>
     </html>
   );

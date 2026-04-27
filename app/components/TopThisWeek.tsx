@@ -1,16 +1,6 @@
-"use client";
-
+import Link from "next/link";
 import { spaceGrotesk } from "../fonts";
-
-interface TopPrompt {
-  id: string;
-  title: string;
-}
-
-interface Props<T extends TopPrompt = TopPrompt> {
-  prompts: T[];
-  onNavigateToPrompt: (prompt: T) => void;
-}
+import { prompts as ALL_PROMPTS, getSlugForPrompt } from "../lib/prompts";
 
 // Curated list - update weekly/monthly. Order = display order.
 const TOP_IDS = [
@@ -26,10 +16,10 @@ const TOP_IDS = [
   "ch6-6.1",  // MLS Listing Description
 ];
 
-export default function TopThisWeek<T extends TopPrompt>({ prompts, onNavigateToPrompt }: Props<T>) {
+export default function TopThisWeek() {
   const topPrompts = TOP_IDS
-    .map((id) => prompts.find((p) => p.id === id))
-    .filter(Boolean) as T[];
+    .map((id) => ALL_PROMPTS.find((p) => p.id === id))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   if (topPrompts.length === 0) return null;
 
@@ -50,67 +40,63 @@ export default function TopThisWeek<T extends TopPrompt>({ prompts, onNavigateTo
       </h2>
 
       <div className="top-list-grid">
-        {topPrompts.map((p, idx) => (
-          <button
-            key={p.id}
-            onClick={() => onNavigateToPrompt(p)}
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: 10,
-              padding: "12px 14px",
-              cursor: "pointer",
-              color: "inherit",
-              textAlign: "left",
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              transition: "border-color 0.2s, background 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(56,189,248,0.3)";
-              e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
-              e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-            }}
-          >
-            <div
+        {topPrompts.map((p, idx) => {
+          const slug = getSlugForPrompt(p.id);
+          if (!slug) return null;
+          return (
+            <Link
+              key={p.id}
+              href={`/p/${slug}`}
+              className="top-list-row"
               style={{
-                fontSize: 12,
-                fontWeight: 800,
-                color: "#64748b",
-                width: 22,
-                flexShrink: 0,
-                letterSpacing: 0.5,
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.06)",
+                borderRadius: 10,
+                padding: "12px 14px",
+                color: "inherit",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                transition: "border-color 0.2s, background 0.2s",
               }}
             >
-              {String(idx + 1).padStart(2, "0")}
-            </div>
-            <div
-              className={spaceGrotesk.className}
-              style={{
-                flex: 1,
-                minWidth: 0,
-                fontSize: 14,
-                fontWeight: 600,
-                color: "#e2e8f0",
-                lineHeight: 1.3,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {p.title}
-            </div>
-            <div style={{ color: "#475569", flexShrink: 0 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m9 18 6-6-6-6" />
-              </svg>
-            </div>
-          </button>
-        ))}
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: 800,
+                  color: "#64748b",
+                  width: 22,
+                  flexShrink: 0,
+                  letterSpacing: 0.5,
+                }}
+              >
+                {String(idx + 1).padStart(2, "0")}
+              </div>
+              <div
+                className={spaceGrotesk.className}
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#e2e8f0",
+                  lineHeight: 1.3,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {p.title}
+              </div>
+              <div style={{ color: "#475569", flexShrink: 0 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

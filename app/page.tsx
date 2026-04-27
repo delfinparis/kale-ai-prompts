@@ -8,8 +8,6 @@ import StrategyCallFooter from "./components/StrategyCallFooter";
 import FeedbackWidget from "./components/FeedbackWidget";
 import OpenInAI from "./components/OpenInAI";
 
-const FREE_COPY_LIMIT = 2;
-
 // --- Types ---
 interface Prompt {
   id: string;
@@ -44,6 +42,11 @@ interface Subcategory {
 }
 
 const prompts = promptsData as Prompt[];
+
+// Swap this weekly to spotlight a different prompt above the Top 10.
+const DJ_PICK_PROMPT_ID = "ch3-2";
+const djPickPrompt =
+  prompts.find((p) => p.id === DJ_PICK_PROMPT_ID) || prompts[0];
 
 // --- Constants ---
 const QUICK_PICKS = [
@@ -1195,201 +1198,6 @@ function PromptCard({
   );
 }
 
-function EmailModal({
-  onSubmit,
-  onClose,
-}: {
-  onSubmit: (email: string, level: string) => void;
-  onClose: () => void;
-}) {
-  const [email, setEmail] = useState("");
-  const [level, setLevel] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async () => {
-    if (!email.trim() || !email.includes("@")) {
-      setError("Please enter a valid email address");
-      return;
-    }
-    setLoading(true);
-    setError("");
-
-    try {
-      await fetch("/api/capture-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, level: level || "not specified" }),
-      });
-    } catch {
-      // Non-blocking
-    }
-
-    pushEvent("lead", { email_level: level || "not specified" });
-    onSubmit(email, level);
-  };
-
-  const levels = [
-    { id: "new", label: "New Agent", sub: "0-2 years" },
-    { id: "mid", label: "Mid-Career", sub: "3-7 years" },
-    { id: "top", label: "Top Producer", sub: "20+ deals/yr" },
-  ];
-
-  return (
-    <div
-      className="modal-backdrop"
-      onClick={onClose}
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(10,22,40,0.8)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 24,
-        zIndex: 1000,
-      }}
-    >
-      <div
-        className="slide-up"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          background: "#162d54",
-          borderRadius: 20,
-          padding: 32,
-          maxWidth: 420,
-          width: "100%",
-          border: "1px solid rgba(255,255,255,0.1)",
-        }}
-      >
-        <h2
-          className={spaceGrotesk.className}
-          style={{
-            fontSize: 22,
-            fontWeight: 600,
-            color: "#f1f5f9",
-            marginBottom: 8,
-            lineHeight: 1.3,
-          }}
-        >
-          We&apos;ll send you a personalized starter pack.
-        </h2>
-        <p
-          style={{
-            fontSize: 14,
-            color: "#94a3b8",
-            marginBottom: 24,
-            lineHeight: 1.5,
-          }}
-        >
-          Enter your email and we&apos;ll send your top 5 prompts based on your
-          experience level. All {prompts.length} prompts open up instantly.
-        </p>
-
-        {error && (
-          <div
-            style={{
-              background: "rgba(239,68,68,0.1)",
-              border: "1px solid rgba(239,68,68,0.2)",
-              borderRadius: 10,
-              padding: 12,
-              marginBottom: 16,
-              color: "#fca5a5",
-              fontSize: 13,
-            }}
-          >
-            {error}
-          </div>
-        )}
-
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          placeholder="you@email.com"
-          autoFocus
-          style={{
-            width: "100%",
-            padding: 14,
-            fontSize: 16,
-            background: "rgba(0,0,0,0.3)",
-            border: "2px solid rgba(255,255,255,0.1)",
-            borderRadius: 12,
-            color: "#f1f5f9",
-            outline: "none",
-            marginBottom: 16,
-          }}
-        />
-
-        <p style={{ fontSize: 13, color: "#94a3b8", marginBottom: 10 }}>
-          Experience level <span style={{ color: "#64748b" }}>(optional)</span>
-        </p>
-        <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
-          {levels.map((l) => (
-            <button
-              key={l.id}
-              onClick={() => setLevel(level === l.id ? "" : l.id)}
-              style={{
-                flex: 1,
-                padding: "10px 8px",
-                background:
-                  level === l.id
-                    ? "rgba(56,189,248,0.15)"
-                    : "rgba(255,255,255,0.04)",
-                border:
-                  level === l.id
-                    ? "1.5px solid rgba(56,189,248,0.4)"
-                    : "1.5px solid rgba(255,255,255,0.08)",
-                borderRadius: 10,
-                cursor: "pointer",
-                color: level === l.id ? "#38bdf8" : "#94a3b8",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontSize: 13, fontWeight: 600 }}>{l.label}</div>
-              <div style={{ fontSize: 11, opacity: 0.7, marginTop: 2 }}>
-                {l.sub}
-              </div>
-            </button>
-          ))}
-        </div>
-
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: 16,
-            background: loading
-              ? "#1e3a6a"
-              : "linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%)",
-            color: "white",
-            border: "none",
-            borderRadius: 12,
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: loading ? "default" : "pointer",
-          }}
-        >
-          {loading ? "Opening..." : "Get All Prompts"}
-        </button>
-
-        <p
-          style={{
-            fontSize: 12,
-            color: "#64748b",
-            textAlign: "center",
-            marginTop: 12,
-          }}
-        >
-          No spam. Unsubscribe anytime.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 // --- Breadcrumb Back Button ---
 function BackButton({ onClick, label }: { onClick: () => void; label?: string }) {
   return (
@@ -1430,20 +1238,13 @@ export default function Home() {
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [activeSubgroup, setActiveSubgroup] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [pendingCopyPrompt, setPendingCopyPrompt] = useState<Prompt | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFavoritesSection, setShowFavoritesSection] = useState(false);
-  const [freeCopiesUsed, setFreeCopiesUsed] = useState(0);
   const [feedbackPromptId, setFeedbackPromptId] = useState<string | null>(null);
 
   useEffect(() => {
-    const unlocked = localStorage.getItem("prompt_vault_unlocked");
-    if (unlocked === "true") setIsUnlocked(true);
-
     const onboardingDismissed = localStorage.getItem("prompt_vault_onboarding_dismissed");
     if (!onboardingDismissed) setShowOnboarding(true);
 
@@ -1452,12 +1253,6 @@ export default function Home() {
       try {
         setFavorites(JSON.parse(savedFavorites));
       } catch {}
-    }
-
-    const freeCount = localStorage.getItem("prompt_vault_free_copies");
-    if (freeCount) {
-      const n = parseInt(freeCount, 10);
-      if (!isNaN(n)) setFreeCopiesUsed(n);
     }
 
     // Handle URL routing
@@ -1620,36 +1415,6 @@ export default function Home() {
       return next;
     });
   }, []);
-
-  const executeCopy = useCallback((prompt: Prompt) => {
-    const textToCopy = prompt.quickStart || prompt.prompt;
-    navigator.clipboard.writeText(textToCopy);
-
-    setCopiedId(prompt.id);
-    setTimeout(() => setCopiedId(null), 2000);
-
-    // Show feedback widget after the "copied!" toast fades
-    setTimeout(() => setFeedbackPromptId(prompt.id), 2200);
-
-    pushEvent("prompt_copy", {
-      prompt_id: prompt.id,
-      prompt_category: prompt.category,
-    });
-  }, []);
-
-  const handleEmailSubmit = useCallback(
-    (email: string, level: string) => {
-      setIsUnlocked(true);
-      localStorage.setItem("prompt_vault_unlocked", "true");
-      setShowEmailModal(false);
-
-      if (pendingCopyPrompt) {
-        executeCopy(pendingCopyPrompt);
-        setPendingCopyPrompt(null);
-      }
-    },
-    [pendingCopyPrompt, executeCopy]
-  );
 
   const handleDismissOnboarding = useCallback(() => {
     setShowOnboarding(false);
@@ -1816,87 +1581,65 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Top 10 This Week */}
-            <TopThisWeek prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
+            {/* D.J.'s Pick This Week - single spotlighted prompt above Top 10. */}
+            <div className="col-narrow" style={{ marginBottom: 28 }}>
+              <div
+                style={{
+                  background:
+                    "linear-gradient(135deg, rgba(16,185,129,0.10), rgba(56,189,248,0.08))",
+                  border: "1px solid rgba(56,189,248,0.25)",
+                  borderRadius: 14,
+                  padding: 20,
+                  textAlign: "left",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "#38bdf8",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    marginBottom: 10,
+                  }}
+                >
+                  D.J.&apos;s Pick This Week
+                </p>
+                <p
+                  className={spaceGrotesk.className}
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: "#f1f5f9",
+                    lineHeight: 1.3,
+                    marginBottom: 6,
+                  }}
+                >
+                  {djPickPrompt.title}
+                </p>
+                {djPickPrompt.whatYouGet && (
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "#94a3b8",
+                      lineHeight: 1.5,
+                      marginBottom: 14,
+                    }}
+                  >
+                    {djPickPrompt.whatYouGet}
+                  </p>
+                )}
+                <OpenInAI
+                  promptText={djPickPrompt.quickStart || djPickPrompt.prompt}
+                  promptId={djPickPrompt.id}
+                  promptTitle={djPickPrompt.title}
+                  label="Use this prompt"
+                />
+              </div>
+            </div>
 
-            {/* Mid-scroll bridge to the 15-min strategy call. */}
-            <div className="col-narrow">
-            <div
-              style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(56,189,248,0.18)",
-                borderRadius: 14,
-                padding: 18,
-                marginBottom: 24,
-                textAlign: "left",
-              }}
-            >
-              <p
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: "#38bdf8",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  marginBottom: 8,
-                }}
-              >
-                Liking what you see?
-              </p>
-              <p
-                className={spaceGrotesk.className}
-                style={{
-                  fontSize: 17,
-                  fontWeight: 700,
-                  color: "#f1f5f9",
-                  lineHeight: 1.3,
-                  marginBottom: 6,
-                }}
-              >
-                These are the prompts. The system behind them is bigger.
-              </p>
-              <p
-                style={{
-                  fontSize: 13,
-                  color: "#94a3b8",
-                  lineHeight: 1.5,
-                  marginBottom: 14,
-                }}
-              >
-                15 minutes with D.J. We map what AI could be doing for your
-                pipeline, specific to your market.
-              </p>
-              <a
-                href="https://joinkale.com/schedule"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => {
-                  if (
-                    typeof window !== "undefined" &&
-                    (window as { dataLayer?: unknown[] }).dataLayer
-                  ) {
-                    (window as { dataLayer?: unknown[] }).dataLayer!.push({
-                      event: "strategy_call_click",
-                      placement: "mid_scroll_bridge",
-                    });
-                  }
-                }}
-                style={{
-                  display: "inline-block",
-                  background: "linear-gradient(135deg, #10b981, #38bdf8)",
-                  color: "#0a1628",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  padding: "10px 18px",
-                  borderRadius: 10,
-                  textDecoration: "none",
-                  letterSpacing: 0.3,
-                }}
-              >
-                Book a 15-min call →
-              </a>
-            </div>
-            </div>
+            {/* Top 10 This Week */}
+            <TopThisWeek />
 
             {/* Favorites */}
             {favoritePrompts.length > 0 && (
@@ -2218,6 +1961,9 @@ export default function Home() {
           </section>
         )}
 
+        {/* Strategy call CTA - inline, before the credibility footer */}
+        <StrategyCallFooter />
+
         {/* Credibility Footer */}
         <footer
           className="col-narrow"
@@ -2245,16 +1991,6 @@ export default function Home() {
           </p>
         </footer>
       </div>
-
-      {showEmailModal && (
-        <EmailModal
-          onSubmit={handleEmailSubmit}
-          onClose={() => {
-            setShowEmailModal(false);
-            setPendingCopyPrompt(null);
-          }}
-        />
-      )}
 
       {copiedId && (
         <div
@@ -2284,8 +2020,6 @@ export default function Home() {
         onClose={() => setFeedbackPromptId(null)}
       />
 
-      {/* Strategy call sticky footer (persistent; dismissible) */}
-      <StrategyCallFooter />
     </div>
   );
 }
