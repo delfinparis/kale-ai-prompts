@@ -63,16 +63,14 @@ body {
   margin-right: auto;
 }
 
-/* Responsive grid for Quick Picks - 2 columns on mobile, 4 on desktop. */
+/* Responsive grid for Quick Picks - 2x2 on all viewports for easier scanning. */
 .quick-picks-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-}
-@media (min-width: 880px) {
-  .quick-picks-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Responsive grid for Top This Week list. */

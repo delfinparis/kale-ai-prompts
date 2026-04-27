@@ -53,37 +53,19 @@ export default function TopThisWeek<T extends TopPrompt>({ prompts, onNavigateTo
 
   return (
     <section style={{ marginBottom: 28 }}>
-      <div
+      <h2
+        className={spaceGrotesk.className}
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          fontSize: 16,
+          fontWeight: 700,
+          color: "#f1f5f9",
+          letterSpacing: "-0.01em",
           marginBottom: 12,
           padding: "0 2px",
         }}
       >
-        <h2
-          className={spaceGrotesk.className}
-          style={{
-            fontSize: 16,
-            fontWeight: 700,
-            color: "#f1f5f9",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          Top 10 This Week
-        </h2>
-        <span
-          style={{
-            fontSize: 11,
-            color: "#64748b",
-            letterSpacing: 0.5,
-            textTransform: "uppercase",
-          }}
-        >
-          Most-used by agents
-        </span>
-      </div>
+        Top 10 This Week
+      </h2>
 
       <div className="top-list-grid">
         {topPrompts.map((p, idx) => (
