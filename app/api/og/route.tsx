@@ -68,7 +68,7 @@ export async function GET() {
             }}
           >
             <span style={{ fontSize: "18px" }}>⚡</span>
-            Supercharge Real Estate Agent AI Results
+            Supercharge AI for Real Estate Agents
           </div>
         </div>
 
