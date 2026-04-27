@@ -5,11 +5,6 @@ import { spaceGrotesk } from "../fonts";
 interface TopPrompt {
   id: string;
   title: string;
-  bestFor: string;
-  category: "write" | "followup" | "coach" | "strategy";
-  difficulty: "beginner" | "intermediate" | "advanced";
-  chapterTitle: string;
-  prompt: string;
 }
 
 interface Props<T extends TopPrompt = TopPrompt> {
@@ -30,19 +25,6 @@ const TOP_IDS = [
   "ch3-23",   // Non-Cringe Referral Ask
   "ch6-6.1",  // MLS Listing Description
 ];
-
-const CATEGORY_LABELS: Record<string, string> = {
-  write: "Write",
-  followup: "Follow Up",
-  coach: "Coach",
-  strategy: "Strategy",
-};
-
-const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: "#10b981",
-  intermediate: "#f59e0b",
-  advanced: "#ef4444",
-};
 
 export default function TopThisWeek<T extends TopPrompt>({ prompts, onNavigateToPrompt }: Props<T>) {
   const topPrompts = TOP_IDS
@@ -106,46 +88,21 @@ export default function TopThisWeek<T extends TopPrompt>({ prompts, onNavigateTo
             >
               {String(idx + 1).padStart(2, "0")}
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div
-                className={spaceGrotesk.className}
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: "#e2e8f0",
-                  lineHeight: 1.3,
-                  marginBottom: 2,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {p.title}
-              </div>
-              <div
-                style={{
-                  fontSize: 11,
-                  color: "#94a3b8",
-                  lineHeight: 1.4,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                <span style={{ color: DIFFICULTY_COLORS[p.difficulty], fontWeight: 700, fontSize: 10, letterSpacing: 0.5, textTransform: "uppercase" }}>
-                  {CATEGORY_LABELS[p.category]}
-                </span>
-                <span style={{ color: "#475569" }}>•</span>
-                <span
-                  style={{
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {p.bestFor}
-                </span>
-              </div>
+            <div
+              className={spaceGrotesk.className}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                fontSize: 14,
+                fontWeight: 600,
+                color: "#e2e8f0",
+                lineHeight: 1.3,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {p.title}
             </div>
             <div style={{ color: "#475569", flexShrink: 0 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
