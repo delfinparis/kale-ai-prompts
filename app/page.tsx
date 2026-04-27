@@ -1778,7 +1778,7 @@ export default function Home() {
             Copy That.<span className="brand-cursor" aria-hidden="true" />
             <br />
             <span style={{ color: "#38bdf8" }}>
-              Supercharge your real estate agent AI results
+              Supercharge real estate agent AI results
             </span>
           </h1>
           <p
