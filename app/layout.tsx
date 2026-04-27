@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     "realtor AI tools",
   ],
   openGraph: {
-    title: "Copy That. | Supercharge Your Real Estate AI Results",
+    title: "Copy That. | Supercharge Your Real Estate Agent AI Results",
     description:
       "570 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
     url: "https://tapthis.co",
