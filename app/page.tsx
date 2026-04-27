@@ -3,10 +3,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { spaceGrotesk } from "./fonts";
 import promptsData from "../data/prompts.json";
-import GlobalSearch from "./components/GlobalSearch";
 import TopThisWeek from "./components/TopThisWeek";
 import StrategyCallFooter from "./components/StrategyCallFooter";
-import StacksEntryCard from "./components/StacksEntryCard";
 import FeedbackWidget from "./components/FeedbackWidget";
 import OpenInAI from "./components/OpenInAI";
 
@@ -46,10 +44,6 @@ interface Subcategory {
 }
 
 const prompts = promptsData as Prompt[];
-
-const FEATURED_HERO_PROMPT_ID = "ch0-1";
-const featuredHeroPrompt =
-  prompts.find((p) => p.id === FEATURED_HERO_PROMPT_ID) || prompts[0];
 
 // --- Constants ---
 const QUICK_PICKS = [
@@ -523,12 +517,6 @@ const DIFFICULTY_COLORS: Record<string, string> = {
   beginner: "#10b981",
   intermediate: "#f59e0b",
   advanced: "#ef4444",
-};
-
-const DIFFICULTY_LABELS: Record<string, string> = {
-  beginner: "Beginner",
-  intermediate: "Intermediate",
-  advanced: "Advanced",
 };
 
 // Variable examples for richer bracket hints
@@ -1473,7 +1461,6 @@ export default function Home() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [pendingCopyPrompt, setPendingCopyPrompt] = useState<Prompt | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [recentlyUsed, setRecentlyUsed] = useState<string[]>([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFavoritesSection, setShowFavoritesSection] = useState(false);
@@ -1483,13 +1470,6 @@ export default function Home() {
   useEffect(() => {
     const unlocked = localStorage.getItem("prompt_vault_unlocked");
     if (unlocked === "true") setIsUnlocked(true);
-
-    const recent = localStorage.getItem("prompt_vault_recent");
-    if (recent) {
-      try {
-        setRecentlyUsed(JSON.parse(recent));
-      } catch {}
-    }
 
     const onboardingDismissed = localStorage.getItem("prompt_vault_onboarding_dismissed");
     if (!onboardingDismissed) setShowOnboarding(true);
@@ -1602,13 +1582,6 @@ export default function Home() {
     return results;
   }, [activeCategory, activeSubcategory, activeSubgroup, expandedId, prompts]);
 
-  // Recently used prompts
-  const recentPrompts = useMemo(() => {
-    return recentlyUsed
-      .map((id) => prompts.find((p) => p.id === id))
-      .filter(Boolean) as Prompt[];
-  }, [recentlyUsed]);
-
   // Favorite prompts
   const favoritePrompts = useMemo(() => {
     return favorites
@@ -1713,12 +1686,6 @@ export default function Home() {
       prompt_id: prompt.id,
       prompt_category: prompt.category,
     });
-
-    setRecentlyUsed((prev) => {
-      const updated = [prompt.id, ...prev.filter((id) => id !== prompt.id)].slice(0, 5);
-      localStorage.setItem("prompt_vault_recent", JSON.stringify(updated));
-      return updated;
-    });
   }, []);
 
   const handleEmailSubmit = useCallback(
@@ -1822,7 +1789,7 @@ export default function Home() {
             Copy That.<span className="brand-cursor" aria-hidden="true" />
             <br />
             <span style={{ color: "#38bdf8" }}>
-              The AI cheat sheet for real estate agents.
+              Supercharge your real estate AI results - done for you!
             </span>
           </h1>
           <p
@@ -1836,67 +1803,7 @@ export default function Home() {
             Copy. Paste. Close more deals. {prompts.length} ready-to-go prompts
             for emails, listings, follow-ups, and scripts.
           </p>
-
-          {/* Featured prompt - instant "try one" affordance. */}
-          <div
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(16,185,129,0.09), rgba(56,189,248,0.07))",
-              border: "1px solid rgba(56,189,248,0.22)",
-              borderRadius: 14,
-              padding: 18,
-              textAlign: "left",
-            }}
-          >
-            <p
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: "#38bdf8",
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-                marginBottom: 10,
-              }}
-            >
-              Try one now. No signup.
-            </p>
-            <p
-              className={spaceGrotesk.className}
-              style={{
-                fontSize: 17,
-                fontWeight: 700,
-                color: "#f1f5f9",
-                lineHeight: 1.3,
-                marginBottom: 6,
-              }}
-            >
-              {featuredHeroPrompt.title}
-            </p>
-            {featuredHeroPrompt.whatYouGet && (
-              <p
-                style={{
-                  fontSize: 13,
-                  color: "#94a3b8",
-                  lineHeight: 1.5,
-                  marginBottom: 14,
-                }}
-              >
-                {featuredHeroPrompt.whatYouGet}
-              </p>
-            )}
-            <OpenInAI
-              promptText={
-                featuredHeroPrompt.quickStart || featuredHeroPrompt.prompt
-              }
-              promptId={featuredHeroPrompt.id}
-              promptTitle={featuredHeroPrompt.title}
-              label="Customize & copy in 20 seconds"
-            />
-          </div>
         </section>
-
-        {/* Global search - always visible */}
-        <GlobalSearch prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
         </div>
 
         {/* HOME: Onboarding + Quick Picks + Top This Week + bridge + Favorites */}
@@ -1969,9 +1876,6 @@ export default function Home() {
                 </button>
               ))}
             </div>
-
-            {/* Stacks entry point */}
-            <StacksEntryCard />
 
             {/* Top 10 This Week */}
             <TopThisWeek prompts={prompts} onNavigateToPrompt={handleNavigateToPrompt} />
@@ -2145,61 +2049,6 @@ export default function Home() {
               </section>
             )}
 
-            {/* Recently Used */}
-            {recentPrompts.length > 0 && (
-              <section style={{ marginBottom: 32 }}>
-                <h2
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: "#64748b",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    marginBottom: 12,
-                  }}
-                >
-                  Recently Used
-                </h2>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
-                  }}
-                >
-                  {recentPrompts.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => handleNavigateToPrompt(p)}
-                      style={{
-                        background: "rgba(255,255,255,0.03)",
-                        border: "1px solid rgba(255,255,255,0.06)",
-                        borderRadius: 10,
-                        padding: "12px 16px",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        color: "#cbd5e1",
-                        fontSize: 14,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 6,
-                          height: 6,
-                          borderRadius: "50%",
-                          background: DIFFICULTY_COLORS[p.difficulty],
-                          flexShrink: 0,
-                        }}
-                      />
-                      {p.title}
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
           </section>
         )}
 

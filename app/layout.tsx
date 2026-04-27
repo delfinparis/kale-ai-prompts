@@ -33,7 +33,7 @@ const jsonLd = {
       "@type": "WebApplication",
       "@id": `${SITE_URL}#app`,
       name: "Copy That.",
-      alternateName: "Copy That. AI Cheat Sheet",
+      alternateName: "Copy That. Real Estate AI",
       url: SITE_URL,
       description:
         "A library of 570 ready-to-use AI prompts built for real estate agents. Customize the brackets, copy, and paste into ChatGPT, Claude, or Gemini.",
@@ -81,11 +81,11 @@ export const metadata: Metadata = {
     "cold outreach for realtors",
     "real estate email templates",
     "real estate follow-up scripts",
-    "AI cheat sheet real estate",
+    "done-for-you real estate AI prompts",
     "realtor AI tools",
   ],
   openGraph: {
-    title: "Copy That. | The AI Cheat Sheet for Real Estate Agents",
+    title: "Copy That. | Supercharge Your Real Estate AI Results",
     description:
       "570 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
     url: "https://tapthis.co",

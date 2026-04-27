@@ -68,7 +68,7 @@ export async function GET() {
             }}
           >
             <span style={{ fontSize: "18px" }}>⚡</span>
-            The AI Cheat Sheet for Real Estate Agents
+            Supercharge Your Real Estate AI Results
           </div>
         </div>
 
