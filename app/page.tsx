@@ -1801,7 +1801,8 @@ export default function Home() {
             }}
           >
             Copy. Paste. Close more deals. {prompts.length} ready-to-go prompts
-            for emails, listings, follow-ups, and scripts.
+            for emails, listings, follow-ups, and scripts. Tap one of the
+            categories below!
           </p>
         </section>
         </div>
