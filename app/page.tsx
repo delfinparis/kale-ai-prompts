@@ -1764,17 +1764,6 @@ export default function Home() {
         <section
           style={{ paddingTop: 48, paddingBottom: 8, textAlign: "center" }}
         >
-          <p
-            style={{
-              fontSize: 13,
-              color: "#64748b",
-              fontStyle: "italic",
-              marginBottom: 14,
-              letterSpacing: "0.01em",
-            }}
-          >
-            When you open ChatGPT and have no idea what to type.
-          </p>
           <h1
             className={spaceGrotesk.className}
             style={{
