@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import Link from "next/link";
 import { spaceGrotesk } from "./fonts";
 import promptsData from "../data/prompts.json";
+import { getSlugForPrompt } from "./lib/prompts";
 import TopThisWeek from "./components/TopThisWeek";
 import StrategyCallFooter from "./components/StrategyCallFooter";
-import FeedbackWidget from "./components/FeedbackWidget";
 import OpenInAI from "./components/OpenInAI";
 
 // --- Types ---
@@ -522,34 +523,6 @@ const DIFFICULTY_COLORS: Record<string, string> = {
   advanced: "#ef4444",
 };
 
-// Variable examples for richer bracket hints
-const VARIABLE_EXAMPLES: Record<string, string> = {
-  "YOUR NAME": "e.g., Sarah Johnson",
-  "YOUR BROKERAGE": "e.g., Keller Williams Realty",
-  "CLIENT NAME": "e.g., John & Maria Chen",
-  "PROPERTY ADDRESS": "e.g., 742 Evergreen Terrace, Springfield",
-  "NEIGHBORHOOD": "e.g., Lincoln Park",
-  "CITY": "e.g., Chicago, IL",
-  "PRICE": "e.g., $425,000",
-  "ASKING PRICE": "e.g., $525,000",
-  "LIST PRICE": "e.g., $399,900",
-  "BEDROOMS": "e.g., 3",
-  "BATHROOMS": "e.g., 2",
-  "SQUARE FOOTAGE": "e.g., 1,850 sq ft",
-  "PROPERTY TYPE": "e.g., single-family home, condo, townhome",
-  "BUYER NAME": "e.g., David & Lisa Park",
-  "SELLER NAME": "e.g., The Hendersons",
-  "AGENT NAME": "e.g., Mike Torres",
-  "THEIR NAME": "e.g., Jessica Adams",
-  "YOUR PHONE": "e.g., (312) 555-0192",
-  "YOUR EMAIL": "e.g., sarah@kwrealty.com",
-  "YOUR MARKET/AREA": "e.g., North Shore suburbs",
-  "THEIR OBJECTION": "e.g., We want to wait for rates to drop",
-  "DATE": "e.g., March 15, 2026",
-  "TIMEFRAME": "e.g., 60 days, 6 months",
-  "NUMBER OF YEARS": "e.g., 8 years",
-};
-
 // --- Helpers ---
 function pushEvent(event: string, data?: Record<string, string>) {
   if (typeof window !== "undefined" && (window as any).dataLayer) {
@@ -557,16 +530,6 @@ function pushEvent(event: string, data?: Record<string, string>) {
   }
 }
 
-function highlightBrackets(text: string): string {
-  return text.replace(/\[([^\]]+)\]/g, (match, inner) => {
-    const upperInner = inner.toUpperCase().trim();
-    const example = VARIABLE_EXAMPLES[upperInner];
-    if (example) {
-      return `<mark>[${inner} - ${example}]</mark>`;
-    }
-    return `<mark>${match}</mark>`;
-  });
-}
 
 function getSubcategoryResults(sub: Subcategory, subgroupId?: string): Prompt[] {
   let matching = prompts.filter(sub.filter);
@@ -589,27 +552,6 @@ function getSubcategoryResults(sub: Subcategory, subgroupId?: string): Prompt[] 
   return [...featuredPrompts, ...rest];
 }
 
-function getRelatedPrompts(prompt: Prompt, count: number = 3): Prompt[] {
-  const words = prompt.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-  const scored = prompts
-    .filter((p) => p.id !== prompt.id)
-    .map((p) => {
-      let score = 0;
-      if (p.category === prompt.category) score += 5;
-      if (p.difficulty === prompt.difficulty) score += 1;
-      for (const w of words) {
-        if (p.title.toLowerCase().includes(w)) score += 3;
-        if (p.bestFor.toLowerCase().includes(w)) score += 1;
-      }
-      return { prompt: p, score };
-    });
-
-  return scored
-    .filter((s) => s.score > 3)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, count)
-    .map((s) => s.prompt);
-}
 
 // --- Components ---
 
@@ -855,25 +797,15 @@ function SubgroupPicker({
 
 function PromptCard({
   prompt,
-  isExpanded,
-  onToggle,
   isFavorited,
   onToggleFavorite,
-  onNavigateToPrompt,
 }: {
   prompt: Prompt;
-  isExpanded: boolean;
-  onToggle: () => void;
   isFavorited: boolean;
   onToggleFavorite: (promptId: string) => void;
-  onNavigateToPrompt: (prompt: Prompt) => void;
 }) {
-  const displayText = prompt.prompt;
-
-  const relatedPrompts = useMemo(
-    () => (isExpanded ? getRelatedPrompts(prompt) : []),
-    [isExpanded, prompt]
-  );
+  const slug = getSlugForPrompt(prompt.id);
+  const href = slug ? `/p/${slug}` : "/";
 
   return (
     <div
@@ -883,23 +815,19 @@ function PromptCard({
         border: "1px solid rgba(255,255,255,0.08)",
         borderRadius: 16,
         overflow: "hidden",
+        position: "relative",
         transition: "border-color 0.2s",
-        ...(isExpanded ? { borderColor: "rgba(56,189,248,0.3)" } : {}),
       }}
     >
-      <button
-        onClick={onToggle}
+      <Link
+        href={href}
         style={{
-          width: "100%",
-          background: "none",
-          border: "none",
-          padding: "20px 24px",
-          cursor: "pointer",
-          textAlign: "left",
-          color: "inherit",
           display: "flex",
           flexDirection: "column",
           gap: 8,
+          padding: "20px 24px",
+          color: "inherit",
+          textDecoration: "none",
         }}
       >
         <div
@@ -948,6 +876,7 @@ function PromptCard({
               </span>
             )}
             <span
+              aria-hidden="true"
               style={{
                 width: 8,
                 height: 8,
@@ -956,21 +885,6 @@ function PromptCard({
                 flexShrink: 0,
               }}
             />
-            <svg
-              width={16}
-              height={16}
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="#64748b"
-              strokeWidth="2"
-              strokeLinecap="round"
-              style={{
-                transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                transition: "transform 0.2s",
-              }}
-            >
-              <polyline points="4 6 8 10 12 6" />
-            </svg>
           </div>
         </div>
 
@@ -982,7 +896,7 @@ function PromptCard({
           </p>
         )}
 
-        {prompt.variables.length > 0 && !isExpanded && (
+        {prompt.variables.length > 0 && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 2 }}>
             {prompt.variables.slice(0, 4).map((v) => (
               <span
@@ -1005,141 +919,32 @@ function PromptCard({
             )}
           </div>
         )}
+      </Link>
+
+      {/* Favorite heart - positioned over the link so it does not navigate. */}
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onToggleFavorite(prompt.id);
+        }}
+        aria-label={isFavorited ? "Remove from favorites" : "Save to favorites"}
+        style={{
+          position: "absolute",
+          top: 14,
+          right: 14,
+          background: "rgba(10,22,40,0.7)",
+          border: "1px solid rgba(255,255,255,0.06)",
+          cursor: "pointer",
+          padding: 6,
+          borderRadius: 8,
+          display: "flex",
+          alignItems: "center",
+          color: isFavorited ? "#ef4444" : "#64748b",
+        }}
+      >
+        <HeartIcon filled={isFavorited} />
       </button>
-
-      {isExpanded && (
-        <div className="slide-up" style={{ padding: "0 24px 24px" }}>
-          {/* Favorite button */}
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
-            <button
-              onClick={() => onToggleFavorite(prompt.id)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 4,
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                color: isFavorited ? "#ef4444" : "#64748b",
-                fontSize: 12,
-              }}
-            >
-              <HeartIcon filled={isFavorited} />
-              {isFavorited ? "Saved" : "Save"}
-            </button>
-          </div>
-
-          <div
-            className="prompt-text"
-            style={{
-              background: "rgba(0,0,0,0.3)",
-              borderRadius: 12,
-              padding: 20,
-              fontSize: 14,
-              lineHeight: 1.7,
-              color: "#cbd5e1",
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word",
-              maxHeight: 400,
-              overflowY: "auto",
-            }}
-            dangerouslySetInnerHTML={{
-              __html: highlightBrackets(displayText),
-            }}
-          />
-
-          {prompt.whatYouGet && (
-            <p
-              style={{
-                fontSize: 13,
-                color: "#94a3b8",
-                marginTop: 12,
-                lineHeight: 1.5,
-              }}
-            >
-              <strong style={{ color: "#cbd5e1" }}>What you&apos;ll get:</strong>{" "}
-              {prompt.whatYouGet}
-            </p>
-          )}
-
-          <div style={{ marginTop: 16 }}>
-            <OpenInAI
-              promptText={prompt.prompt}
-              promptId={prompt.id}
-              promptTitle={prompt.title}
-            />
-          </div>
-
-          {/* Related prompts */}
-          {relatedPrompts.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <p
-                style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: "#64748b",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                  marginBottom: 8,
-                }}
-              >
-                Related prompts
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {relatedPrompts.map((rp) => (
-                  <button
-                    key={rp.id}
-                    onClick={() => onNavigateToPrompt(rp)}
-                    style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.06)",
-                      borderRadius: 8,
-                      padding: "10px 14px",
-                      cursor: "pointer",
-                      textAlign: "left",
-                      color: "#cbd5e1",
-                      fontSize: 13,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      transition: "border-color 0.2s",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.borderColor = "rgba(56,189,248,0.2)")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")
-                    }
-                  >
-                    <span
-                      style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: "50%",
-                        background: DIFFICULTY_COLORS[rp.difficulty],
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span style={{ flex: 1 }}>{rp.title}</span>
-                    <svg
-                      width={14}
-                      height={14}
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      stroke="#475569"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    >
-                      <polyline points="6 4 10 8 6 12" />
-                    </svg>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }
@@ -1184,11 +989,9 @@ export default function Home() {
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [activeSubgroup, setActiveSubgroup] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showFavoritesSection, setShowFavoritesSection] = useState(false);
-  const [feedbackPromptId, setFeedbackPromptId] = useState<string | null>(null);
 
   useEffect(() => {
     const onboardingDismissed = localStorage.getItem("prompt_vault_onboarding_dismissed");
@@ -1354,14 +1157,6 @@ export default function Home() {
     }
   }, [activeSubgroup, activeSubcategory, activeCategory, updateUrl]);
 
-  const handleToggle = useCallback((promptId: string) => {
-    setExpandedId((prev) => {
-      const next = prev === promptId ? null : promptId;
-      if (next) pushEvent("prompt_view", { prompt_id: promptId });
-      return next;
-    });
-  }, []);
-
   const handleDismissOnboarding = useCallback(() => {
     setShowOnboarding(false);
     localStorage.setItem("prompt_vault_onboarding_dismissed", "true");
@@ -1376,26 +1171,6 @@ export default function Home() {
       return updated;
     });
   }, []);
-
-  const handleNavigateToPrompt = useCallback((prompt: Prompt) => {
-    setActiveCategory(prompt.category);
-    const subs = SUBCATEGORIES[prompt.category] || [];
-    // Subcategory filters are regex-on-title, so some prompts match none.
-    // Fall back to the first subcategory so we never strand the user on
-    // the "What specifically?" picker after a direct navigate.
-    const targetSub = subs.find((s) => s.filter(prompt)) || subs[0];
-    if (targetSub) {
-      setActiveSubcategory(targetSub.id);
-      if (targetSub.subgroups && targetSub.subgroups.length > 0) {
-        const matchingSubgroup = targetSub.subgroups.find((sg) => sg.filter(prompt));
-        setActiveSubgroup((matchingSubgroup || targetSub.subgroups[0]).id);
-      } else {
-        setActiveSubgroup(null);
-      }
-    }
-    setExpandedId(prompt.id);
-    updateUrl(`/prompt/${prompt.id}`);
-  }, [updateUrl]);
 
   // Determine what view to show
   const isHome = !activeCategory;
@@ -1641,37 +1416,40 @@ export default function Home() {
                       gap: 8,
                     }}
                   >
-                    {favoritePrompts.map((p) => (
-                      <button
-                        key={p.id}
-                        onClick={() => handleNavigateToPrompt(p)}
-                        style={{
-                          background: "rgba(255,255,255,0.03)",
-                          border: "1px solid rgba(255,255,255,0.06)",
-                          borderRadius: 10,
-                          padding: "12px 16px",
-                          cursor: "pointer",
-                          textAlign: "left",
-                          color: "#cbd5e1",
-                          fontSize: 14,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                        }}
-                      >
-                        <HeartIcon filled={true} />
-                        <span style={{ flex: 1 }}>{p.title}</span>
-                        <span
+                    {favoritePrompts.map((p) => {
+                      const slug = getSlugForPrompt(p.id);
+                      const href = slug ? `/p/${slug}` : "/";
+                      return (
+                        <Link
+                          key={p.id}
+                          href={href}
                           style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: "50%",
-                            background: DIFFICULTY_COLORS[p.difficulty],
-                            flexShrink: 0,
+                            background: "rgba(255,255,255,0.03)",
+                            border: "1px solid rgba(255,255,255,0.06)",
+                            borderRadius: 10,
+                            padding: "12px 16px",
+                            textDecoration: "none",
+                            color: "#cbd5e1",
+                            fontSize: 14,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
                           }}
-                        />
-                      </button>
-                    ))}
+                        >
+                          <HeartIcon filled={true} />
+                          <span style={{ flex: 1 }}>{p.title}</span>
+                          <span
+                            style={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: "50%",
+                              background: DIFFICULTY_COLORS[p.difficulty],
+                              flexShrink: 0,
+                            }}
+                          />
+                        </Link>
+                      );
+                    })}
                   </div>
                 )}
               </section>
@@ -1896,11 +1674,8 @@ export default function Home() {
                 <PromptCard
                   key={p.id}
                   prompt={p}
-                  isExpanded={expandedId === p.id}
-                  onToggle={() => handleToggle(p.id)}
                   isFavorited={favorites.includes(p.id)}
                   onToggleFavorite={handleToggleFavorite}
-                  onNavigateToPrompt={handleNavigateToPrompt}
                 />
               ))}
             </div>
@@ -1937,34 +1712,6 @@ export default function Home() {
           </p>
         </footer>
       </div>
-
-      {copiedId && (
-        <div
-          className="slide-up"
-          style={{
-            position: "fixed",
-            bottom: 24,
-            left: "50%",
-            transform: "translateX(-50%)",
-            background: "#10b981",
-            color: "white",
-            padding: "12px 24px",
-            borderRadius: 12,
-            fontSize: 14,
-            fontWeight: 600,
-            zIndex: 999,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
-          }}
-        >
-          Copied to clipboard!
-        </div>
-      )}
-
-      {/* Feedback widget - appears after a copy event */}
-      <FeedbackWidget
-        promptId={feedbackPromptId}
-        onClose={() => setFeedbackPromptId(null)}
-      />
 
     </div>
   );

@@ -35,7 +35,16 @@ type BracketField = {
   multiline: boolean;
   rememberable: boolean;
   defaultValue: string;
+  isToday: boolean;   // True for date-style fields - refresh at submit so the date never goes stale.
 };
+
+function todayString(): string {
+  return new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
 
 /** Regex to find [bracketed tokens]. Capped length stops runaway matches. */
 const BRACKET_RE = /\[([^\]\n]{1,200})\]/g;
@@ -103,14 +112,8 @@ function parseBrackets(promptText: string): BracketField[] {
     const multiline = MULTILINE_TERMS.test(upper);
     const rememberable = REMEMBERABLE_TERMS.test(upper);
 
-    let defaultValue = "";
-    if (TODAY_TERMS.test(upper)) {
-      defaultValue = new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    }
+    const isToday = TODAY_TERMS.test(upper);
+    const defaultValue = isToday ? todayString() : "";
 
     seen.set(original, {
       original,
@@ -121,6 +124,7 @@ function parseBrackets(promptText: string): BracketField[] {
       multiline,
       rememberable,
       defaultValue,
+      isToday,
     });
   }
   return Array.from(seen.values());
@@ -319,6 +323,7 @@ function CustomizeModal({
 }) {
   const [values, setValues] = useState<Record<string, string>>({});
   const [remember, setRemember] = useState<Record<string, boolean>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   // Seed from remembered storage + auto-fill defaults
   useEffect(() => {
@@ -346,16 +351,29 @@ function CustomizeModal({
   };
 
   const handleSubmit = () => {
+    if (submitting) return;
+    setSubmitting(true);
+    // Refresh today's date so a long-open modal never submits a stale value.
+    const today = todayString();
+    const finalValues: Record<string, string> = { ...values };
+    for (const f of fields) {
+      if (f.isToday) {
+        const current = (finalValues[f.original] || "").trim();
+        if (!current || current === f.defaultValue) {
+          finalValues[f.original] = today;
+        }
+      }
+    }
     // Save remembered fields
     const toSave: Record<string, string> = {};
     for (const f of fields) {
       if (f.rememberable && remember[f.original]) {
-        const v = (values[f.original] || "").trim();
+        const v = (finalValues[f.original] || "").trim();
         if (v) toSave[f.key] = v;
       }
     }
     if (Object.keys(toSave).length > 0) saveRemembered(toSave);
-    onSubmit(values);
+    onSubmit(finalValues);
   };
 
   const filledCount = fields.filter((f) => (values[f.original] || "").trim().length > 0).length;
@@ -375,7 +393,17 @@ function CustomizeModal({
         </button>
       </div>
       {promptTitle && (
-        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14 }}>{promptTitle}</div>
+        <div
+          style={{
+            fontSize: 12,
+            color: "#64748b",
+            marginBottom: 14,
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
+          }}
+        >
+          {promptTitle}
+        </div>
       )}
 
       <div style={{ fontSize: 13, color: "#cbd5e1", lineHeight: 1.5, marginBottom: 16 }}>
@@ -402,19 +430,22 @@ function CustomizeModal({
       <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 18 }}>
         <button
           onClick={handleSubmit}
+          disabled={submitting}
           className="copy-btn-primary"
           style={{
             padding: "12px 18px",
-            background: "linear-gradient(135deg, #10b981, #38bdf8)",
+            background: submitting
+              ? "rgba(56,189,248,0.4)"
+              : "linear-gradient(135deg, #10b981, #38bdf8)",
             color: "#0a1628",
             border: "none",
             borderRadius: 10,
             fontSize: 14,
             fontWeight: 700,
-            cursor: "pointer",
+            cursor: submitting ? "default" : "pointer",
           }}
         >
-          Copy customized prompt
+          {submitting ? "Copying…" : "Copy customized prompt"}
         </button>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12 }}>
           <button

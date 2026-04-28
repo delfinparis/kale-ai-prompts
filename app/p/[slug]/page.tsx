@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getAllSlugs, getPromptBySlug, type Prompt } from "../../lib/prompts";
 import { spaceGrotesk } from "../../fonts";
 import OpenInAI from "../../components/OpenInAI";
+import CopyLinkButton from "../../components/CopyLinkButton";
 
 const SITE_URL = "https://tapthis.co";
 
@@ -216,12 +217,15 @@ export default async function PromptPage(
         )}
 
         {/* Primary CTA */}
-        <div style={{ marginBottom: 32 }}>
+        <div style={{ marginBottom: 12 }}>
           <OpenInAI
             promptText={promptText}
             promptId={prompt.id}
             promptTitle={prompt.title}
           />
+        </div>
+        <div style={{ marginBottom: 32 }}>
+          <CopyLinkButton url={`${SITE_URL}/p/${slug}`} />
         </div>
 
         {/* Prompt body */}

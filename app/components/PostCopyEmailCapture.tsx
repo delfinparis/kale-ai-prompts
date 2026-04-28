@@ -33,6 +33,10 @@ export default function PostCopyEmailCapture() {
   const close = () => {
     setOpen(false);
     setError("");
+    // Sticky dismissal: do not nag again on subsequent copies in this device.
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, "true");
+    }
   };
 
   const submit = async () => {
@@ -72,7 +76,7 @@ export default function PostCopyEmailCapture() {
         alignItems: "center",
         justifyContent: "center",
         padding: 24,
-        zIndex: 1000,
+        zIndex: 1400,
       }}
     >
       <div
