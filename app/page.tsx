@@ -868,9 +868,7 @@ function PromptCard({
   onToggleFavorite: (promptId: string) => void;
   onNavigateToPrompt: (prompt: Prompt) => void;
 }) {
-  const [showFull, setShowFull] = useState(false);
-  const displayText =
-    !showFull && prompt.quickStart ? prompt.quickStart : prompt.prompt;
+  const displayText = prompt.prompt;
 
   const relatedPrompts = useMemo(
     () => (isExpanded ? getRelatedPrompts(prompt) : []),
@@ -1051,58 +1049,6 @@ function PromptCard({
             }}
           />
 
-          {/* Pill-style toggle for quick-start / full version */}
-          {prompt.quickStart && (
-            <div
-              style={{
-                display: "flex",
-                marginTop: 12,
-                background: "rgba(255,255,255,0.04)",
-                borderRadius: 8,
-                padding: 3,
-                border: "1px solid rgba(255,255,255,0.06)",
-                width: "fit-content",
-              }}
-            >
-              <button
-                onClick={() => setShowFull(false)}
-                style={{
-                  padding: "6px 14px",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  borderRadius: 6,
-                  border: "none",
-                  cursor: "pointer",
-                  background: !showFull
-                    ? "rgba(56,189,248,0.15)"
-                    : "transparent",
-                  color: !showFull ? "#38bdf8" : "#64748b",
-                  transition: "all 0.2s",
-                }}
-              >
-                Quick-start
-              </button>
-              <button
-                onClick={() => setShowFull(true)}
-                style={{
-                  padding: "6px 14px",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  borderRadius: 6,
-                  border: "none",
-                  cursor: "pointer",
-                  background: showFull
-                    ? "rgba(56,189,248,0.15)"
-                    : "transparent",
-                  color: showFull ? "#38bdf8" : "#64748b",
-                  transition: "all 0.2s",
-                }}
-              >
-                Full version
-              </button>
-            </div>
-          )}
-
           {prompt.whatYouGet && (
             <p
               style={{
@@ -1119,7 +1065,7 @@ function PromptCard({
 
           <div style={{ marginTop: 16 }}>
             <OpenInAI
-              promptText={prompt.quickStart || prompt.prompt}
+              promptText={prompt.prompt}
               promptId={prompt.id}
               promptTitle={prompt.title}
             />
@@ -1630,7 +1576,7 @@ export default function Home() {
                   </p>
                 )}
                 <OpenInAI
-                  promptText={djPickPrompt.quickStart || djPickPrompt.prompt}
+                  promptText={djPickPrompt.prompt}
                   promptId={djPickPrompt.id}
                   promptTitle={djPickPrompt.title}
                   label="Use this prompt"

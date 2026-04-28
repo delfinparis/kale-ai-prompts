@@ -137,7 +137,7 @@ export default async function PromptPage(
   const prompt = getPromptBySlug(slug);
   if (!prompt) notFound();
 
-  const promptText = prompt.quickStart || prompt.prompt;
+  const promptText = prompt.prompt;
   const cleanedBestFor = prompt.bestFor.replace(/\*\*/g, "").trim();
 
   return (
