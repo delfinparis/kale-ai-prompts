@@ -140,6 +140,13 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
         ),
     },
     {
+      id: "short-form-video",
+      label: "Short-Form Video Mastery",
+      desc: "Reels, TikToks, Shorts -- hyper-local, market insight, daily life, hooks",
+      featured: ["ch16-1", "ch16-16", "ch16-31"],
+      filter: (p) => p.category === "write" && p.chapter === 16,
+    },
+    {
       id: "marketing-copy",
       label: "Marketing, Ads & Guides",
       desc: "Ad copy, SEO, landing pages, lead magnets, reports",
@@ -513,6 +520,13 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
         /content|calendar|brand|seo|video|repurpos|market update|blog|newsletter|visual explainer|first-time buyer.*email|seller preparation|faq|objection-response|success story/i.test(
           p.title
         ),
+    },
+    {
+      id: "short-form-video-strategy",
+      label: "Short-Form Video Strategy",
+      desc: "Niche, platform mix, hashtags, posting times, metrics, audience research",
+      featured: ["ch16-43", "ch16-49", "ch16-2"],
+      filter: (p) => p.category === "strategy" && p.chapter === 16,
     },
   ],
 };
