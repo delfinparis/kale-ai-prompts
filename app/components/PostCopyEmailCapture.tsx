@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { spaceGrotesk } from "../fonts";
+import { newEventId } from "@/lib/meta-events";
 
 const STORAGE_KEY = "copythat_email_captured";
 
@@ -10,6 +11,12 @@ function pushEvent(event: string, data?: Record<string, string>) {
   const w = window as { dataLayer?: unknown[] };
   if (!w.dataLayer) w.dataLayer = [];
   w.dataLayer.push({ event, ...(data || {}) });
+}
+
+function getCookie(name: string): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[2]) : undefined;
 }
 
 export default function PostCopyEmailCapture() {
@@ -46,16 +53,33 @@ export default function PostCopyEmailCapture() {
     }
     setLoading(true);
     setError("");
+    // One event_id shared by the server-side CAPI Lead and (if you later wire a
+    // GTM browser Lead tag) the browser pixel, so Meta deduplicates them.
+    const eventId = newEventId();
+    const fbp = getCookie("_fbp");
+    const fbc = getCookie("_fbc");
     try {
       await fetch("/api/capture-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, level: "post_copy" }),
+        body: JSON.stringify({
+          email,
+          level: "post_copy",
+          eventId,
+          eventSourceUrl: window.location.href,
+          fbp,
+          fbc,
+        }),
+        keepalive: true, // lets the request finish even if the page navigates away
       });
     } catch {
       // Non-blocking: still mark captured so we do not nag again.
     }
-    pushEvent("lead", { email_level: "post_copy", placement: "post_copy_modal" });
+    pushEvent("lead", {
+      email_level: "post_copy",
+      placement: "post_copy_modal",
+      event_id: eventId,
+    });
     localStorage.setItem(STORAGE_KEY, "true");
     setLoading(false);
     setSubmitted(true);
