@@ -5,9 +5,7 @@ import Link from "next/link";
 import { spaceGrotesk } from "./fonts";
 import promptsData from "../data/prompts.json";
 import { getSlugForPrompt } from "./lib/prompts";
-import TopThisWeek from "./components/TopThisWeek";
 import StrategyCallFooter from "./components/StrategyCallFooter";
-import OpenInAI from "./components/OpenInAI";
 
 // --- Types ---
 interface Prompt {
@@ -43,11 +41,6 @@ interface Subcategory {
 }
 
 const prompts = promptsData as Prompt[];
-
-// Swap this weekly to spotlight a different prompt above the Top 10.
-const DJ_PICK_PROMPT_ID = "ch3-2";
-const djPickPrompt =
-  prompts.find((p) => p.id === DJ_PICK_PROMPT_ID) || prompts[0];
 
 // --- Constants ---
 const QUICK_PICKS = [
@@ -1245,7 +1238,7 @@ export default function Home() {
         </section>
         </div>
 
-        {/* HOME: Onboarding + Quick Picks + Top This Week + bridge + Favorites */}
+        {/* HOME: Onboarding + Quick Picks + Favorites */}
         {isHome && (
           <section className="fade-in">
             {/* Onboarding Banner */}
@@ -1315,66 +1308,6 @@ export default function Home() {
                 </button>
               ))}
             </div>
-
-            {/* D.J.'s Pick This Week - single spotlighted prompt above Top 10. */}
-            <div className="col-narrow" style={{ marginBottom: 28 }}>
-              <div
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(16,185,129,0.10), rgba(56,189,248,0.08))",
-                  border: "1px solid rgba(56,189,248,0.25)",
-                  borderRadius: 14,
-                  padding: 20,
-                  textAlign: "left",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: "#38bdf8",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.06em",
-                    marginBottom: 10,
-                  }}
-                >
-                  D.J.&apos;s Pick This Week
-                </p>
-                <p
-                  className={spaceGrotesk.className}
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 700,
-                    color: "#f1f5f9",
-                    lineHeight: 1.3,
-                    marginBottom: 6,
-                  }}
-                >
-                  {djPickPrompt.title}
-                </p>
-                {djPickPrompt.whatYouGet && (
-                  <p
-                    style={{
-                      fontSize: 13,
-                      color: "#94a3b8",
-                      lineHeight: 1.5,
-                      marginBottom: 14,
-                    }}
-                  >
-                    {djPickPrompt.whatYouGet}
-                  </p>
-                )}
-                <OpenInAI
-                  promptText={djPickPrompt.prompt}
-                  promptId={djPickPrompt.id}
-                  promptTitle={djPickPrompt.title}
-                  label="Use this prompt"
-                />
-              </div>
-            </div>
-
-            {/* Top 10 This Week */}
-            <TopThisWeek />
 
             {/* Favorites */}
             {favoritePrompts.length > 0 && (
