@@ -5,7 +5,8 @@ export const runtime = "nodejs"; // node crypto needed for CAPI hashing; keep of
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, level, eventId, eventSourceUrl, fbp, fbc } = await req.json();
+    const { email, level, eventId, eventSourceUrl, fbp, fbc, promptText, promptTitle } =
+      await req.json();
 
     if (!email || !email.includes("@")) {
       return NextResponse.json(
@@ -104,6 +105,29 @@ export async function POST(req: NextRequest) {
         },
         customData: { content_name: "tapthis_email_capture", lead_level: levelLabel },
       });
+    }
+
+    // Email the prompt to the visitor as a "backup" (the gate's promise).
+    // Sends via a Google Apps Script web app running under dj@kalerealty.com,
+    // so the mail comes from the Workspace account with proper SPF/DKIM.
+    // Skips silently if no prompt was sent or the webhook isn't configured yet,
+    // so the gate + lead capture keep working before this is wired up.
+    const emailWebhookUrl = process.env.PROMPT_EMAIL_WEBHOOK_URL;
+    if (emailWebhookUrl && typeof promptText === "string" && promptText.trim()) {
+      try {
+        await fetch(emailWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: process.env.PROMPT_EMAIL_WEBHOOK_TOKEN || "",
+            to: email,
+            promptTitle: typeof promptTitle === "string" ? promptTitle : "Your prompt",
+            promptText,
+          }),
+        });
+      } catch (err) {
+        console.error("Prompt backup email failed:", err);
+      }
     }
 
     return NextResponse.json({ success: true });
