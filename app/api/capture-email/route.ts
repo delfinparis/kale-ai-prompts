@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sendCapiEvent } from "@/lib/meta-capi";
+
+export const runtime = "nodejs"; // node crypto needed for CAPI hashing; keep off the Edge runtime
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, level } = await req.json();
+    const { email, level, eventId, eventSourceUrl, fbp, fbc } = await req.json();
 
     if (!email || !email.includes("@")) {
       return NextResponse.json(
@@ -79,6 +82,28 @@ export async function POST(req: NextRequest) {
           }
         })
         .catch(() => {});
+    }
+
+    // Fire the Meta CAPI Lead server-side. This is the priority event: it carries
+    // the hashed email and survives ad blockers / Instagram's in-app browser.
+    // Deduplicates with the GTM browser pixel via the shared eventId + "Lead".
+    // Awaited so it flushes before the serverless function freezes; failures are
+    // swallowed inside sendCapiEvent and must not block the signup response.
+    if (eventId) {
+      await sendCapiEvent({
+        eventName: "Lead",
+        eventId,
+        eventSourceUrl: eventSourceUrl || req.headers.get("referer") || undefined,
+        userData: {
+          email,
+          clientIpAddress:
+            req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined,
+          clientUserAgent: req.headers.get("user-agent") || undefined,
+          fbp,
+          fbc,
+        },
+        customData: { content_name: "tapthis_email_capture", lead_level: levelLabel },
+      });
     }
 
     return NextResponse.json({ success: true });
