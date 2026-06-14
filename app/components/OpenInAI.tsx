@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { newEventId } from "@/lib/meta-events";
 
 interface Props {
   promptText: string;
@@ -25,6 +26,25 @@ const TOOLS: AITool[] = [
 ];
 
 const REMEMBERED_KEY = "prompt_vault_remembered_fields_v1";
+
+// Shared with the post-copy email popup: once a visitor gives their email
+// anywhere, we never gate or nag them again on this device.
+const CAPTURE_KEY = "copythat_email_captured";
+
+function getCookie(name: string): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[2]) : undefined;
+}
+
+function hasCaptured(): boolean {
+  if (typeof window === "undefined") return true; // never gate during SSR / crawlers
+  try {
+    return localStorage.getItem(CAPTURE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
 
 type BracketField = {
   original: string;   // exact string including brackets: "[YOUR MARKET]"
@@ -181,7 +201,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
-type Mode = null | "customize" | "picker";
+type Mode = null | "gate" | "customize" | "picker";
 
 export default function OpenInAI({ promptText, promptId, label, promptTitle }: Props) {
   const [mode, setMode] = useState<Mode>(null);
@@ -210,7 +230,19 @@ export default function OpenInAI({ promptText, promptId, label, promptTitle }: P
     setMode("picker");
   };
 
+  // The copy/open action is gated: the first time a visitor uses it (before
+  // they've ever given an email), ask for their email and send them the prompt
+  // as a backup. After that the flag is set and they're never gated again.
+  // The prompt text itself stays visible, so crawlers and SEO are unaffected.
   const handlePrimaryClick = async () => {
+    if (!hasCaptured()) {
+      setMode("gate");
+      return;
+    }
+    await proceed();
+  };
+
+  const proceed = async () => {
     if (fields.length === 0) {
       // No brackets - straight to picker with raw prompt.
       await transitionToPicker(promptText, "raw");
@@ -221,6 +253,41 @@ export default function OpenInAI({ promptText, promptId, label, promptTitle }: P
       fields_total: fields.length,
     });
     setMode("customize");
+  };
+
+  const captureAndEmailPrompt = (email: string) => {
+    const eventId = newEventId();
+    const fbp = getCookie("_fbp");
+    const fbc = getCookie("_fbc");
+    // Lead capture (Close + Meta CAPI) AND the backup-prompt email, in one call.
+    fetch("/api/capture-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        level: "prompt_gate",
+        eventId,
+        eventSourceUrl: window.location.href,
+        fbp,
+        fbc,
+        promptText,
+        promptTitle: promptTitle || "",
+      }),
+      keepalive: true,
+    }).catch(() => {});
+    pushEvent("lead", {
+      email_level: "prompt_gate",
+      placement: "prompt_gate",
+      event_id: eventId,
+    });
+  };
+
+  const handleGateSubmit = async (email: string) => {
+    try {
+      localStorage.setItem(CAPTURE_KEY, "true");
+    } catch {}
+    captureAndEmailPrompt(email);
+    await proceed();
   };
 
   const handleCustomizeSubmit = async (fills: Record<string, string>) => {
@@ -285,6 +352,14 @@ export default function OpenInAI({ promptText, promptId, label, promptTitle }: P
         {buttonLabel}
       </button>
 
+      {mode === "gate" && (
+        <GateModal
+          promptTitle={promptTitle}
+          onSubmit={handleGateSubmit}
+          onCancel={() => setMode(null)}
+        />
+      )}
+
       {mode === "customize" && (
         <CustomizeModal
           promptTitle={promptTitle}
@@ -305,6 +380,116 @@ export default function OpenInAI({ promptText, promptId, label, promptTitle }: P
         />
       )}
     </>
+  );
+}
+
+function GateModal({
+  promptTitle,
+  onSubmit,
+  onCancel,
+}: {
+  promptTitle?: string;
+  onSubmit: (email: string) => void;
+  onCancel: () => void;
+}) {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const submit = () => {
+    if (submitting) return;
+    if (!email.trim() || !email.includes("@")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    setSubmitting(true);
+    onSubmit(email.trim());
+  };
+
+  return (
+    <ModalBackdrop onClose={onCancel}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+        <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, letterSpacing: 0.2 }}>
+          Where should we send it?
+        </h3>
+        <button
+          onClick={onCancel}
+          aria-label="Close"
+          style={{ background: "none", border: "none", color: "#64748b", fontSize: 22, cursor: "pointer", padding: "0 4px", lineHeight: 1 }}
+        >
+          ×
+        </button>
+      </div>
+      {promptTitle && (
+        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14, wordBreak: "break-word" }}>
+          {promptTitle}
+        </div>
+      )}
+      <p style={{ fontSize: 13, color: "#cbd5e1", lineHeight: 1.55, marginBottom: 16 }}>
+        Enter your email and we&apos;ll send you this prompt as a backup, so you always
+        have it. Then we&apos;ll open it up for you.
+      </p>
+
+      {error && (
+        <div
+          style={{
+            background: "rgba(239,68,68,0.1)",
+            border: "1px solid rgba(239,68,68,0.2)",
+            borderRadius: 10,
+            padding: 10,
+            marginBottom: 12,
+            color: "#fca5a5",
+            fontSize: 13,
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && submit()}
+        placeholder="you@email.com"
+        autoFocus
+        style={{
+          width: "100%",
+          padding: 13,
+          fontSize: 16,
+          background: "#0a1628",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: 10,
+          color: "#e2e8f0",
+          outline: "none",
+          marginBottom: 12,
+        }}
+      />
+
+      <button
+        onClick={submit}
+        disabled={submitting}
+        className="copy-btn-primary"
+        style={{
+          width: "100%",
+          padding: "13px 18px",
+          background: submitting
+            ? "rgba(56,189,248,0.4)"
+            : "linear-gradient(135deg, #10b981, #38bdf8)",
+          color: "#0a1628",
+          border: "none",
+          borderRadius: 10,
+          fontSize: 14,
+          fontWeight: 700,
+          cursor: submitting ? "default" : "pointer",
+        }}
+      >
+        {submitting ? "Opening…" : "Email it to me & continue"}
+      </button>
+      <p style={{ fontSize: 11, color: "#64748b", textAlign: "center", marginTop: 10, marginBottom: 0 }}>
+        New prompts every Friday. Unsubscribe anytime.
+      </p>
+    </ModalBackdrop>
   );
 }
 
