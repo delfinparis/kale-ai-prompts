@@ -298,7 +298,7 @@ export default function WebinarPromptsPage() {
               marginBottom: 16,
             }}
           >
-            Want more? The full vault has 570 prompts across 16 chapters.
+            Want more? The full vault has 620 prompts across 16 chapters.
           </p>
           <Link
             href="/"
@@ -314,7 +314,7 @@ export default function WebinarPromptsPage() {
               textDecoration: "none",
             }}
           >
-            Browse All 570 Prompts
+            Browse All 620 Prompts
           </Link>
         </div>
 

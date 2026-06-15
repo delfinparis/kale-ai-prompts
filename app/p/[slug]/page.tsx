@@ -274,7 +274,7 @@ export default async function PromptPage(
               textDecoration: "none",
             }}
           >
-            ← Browse all 570 prompts
+            ← Browse all 620 prompts
           </Link>
         </div>
       </div>

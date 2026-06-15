@@ -26,7 +26,7 @@ const jsonLd = {
       url: SITE_URL,
       name: "Copy That.",
       description:
-        "570 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
+        "620 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
       publisher: { "@id": `${SITE_URL}#org` },
       inLanguage: "en-US",
     },
@@ -37,7 +37,7 @@ const jsonLd = {
       alternateName: "Copy That. Real Estate AI",
       url: SITE_URL,
       description:
-        "A library of 570 ready-to-use AI prompts built for real estate agents. Customize the brackets, copy, and paste into ChatGPT, Claude, or Gemini.",
+        "A library of 620 ready-to-use AI prompts built for real estate agents. Customize the brackets, copy, and paste into ChatGPT, Claude, or Gemini.",
       applicationCategory: "BusinessApplication",
       applicationSubCategory: "Real Estate AI Tools",
       operatingSystem: "Any (web)",
@@ -68,9 +68,9 @@ const jsonLd = {
 };
 
 export const metadata: Metadata = {
-  title: "Copy That. | 570 AI Prompts for Real Estate Agents",
+  title: "Copy That. | 620 AI Prompts for Real Estate Agents",
   description:
-    "570 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
+    "620 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
   metadataBase: new URL("https://tapthis.co"),
   keywords: [
     "AI prompts for real estate agents",
@@ -88,7 +88,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Copy That. | Supercharge AI for Real Estate Agents",
     description:
-      "570 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
+      "620 copy-paste AI prompts for real estate agents. Drop into ChatGPT, Claude, or Gemini for listings, emails, follow-ups, cold outreach, and scripts.",
     url: "https://tapthis.co",
     siteName: "Copy That.",
     images: [
@@ -96,16 +96,16 @@ export const metadata: Metadata = {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "Copy That. 570 copy-paste AI prompts for real estate agents.",
+        alt: "Copy That. 620 copy-paste AI prompts for real estate agents.",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Copy That. | 570 AI Prompts for Real Estate Agents",
+    title: "Copy That. | 620 AI Prompts for Real Estate Agents",
     description:
-      "570 copy-paste AI prompts for real estate agents. For ChatGPT, Claude, and Gemini.",
+      "620 copy-paste AI prompts for real estate agents. For ChatGPT, Claude, and Gemini.",
     images: ["/api/og"],
   },
 };

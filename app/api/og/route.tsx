@@ -98,7 +98,7 @@ export async function GET() {
               }}
             />
           </span>
-          <span style={{ color: "#38bdf8", fontSize: "44px", marginTop: "12px" }}>570 AI prompts for realtors</span>
+          <span style={{ color: "#38bdf8", fontSize: "44px", marginTop: "12px" }}>620 AI prompts for realtors</span>
         </div>
 
         {/* Subtitle */}

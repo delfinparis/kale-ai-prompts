@@ -742,7 +742,7 @@ export default function ProspectingPage() {
               marginRight: 20,
             }}
           >
-            Browse 570 more prompts in the vault →
+            Browse 620 more prompts in the vault →
           </Link>
           <a
             href="https://github.com/delfinparis/ai-prospecting-presentation"

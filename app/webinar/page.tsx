@@ -298,7 +298,7 @@ export default function WebinarPage() {
               letterSpacing: 0.5,
             }}
           >
-            Browse All 570 Prompts →
+            Browse All 620 Prompts →
           </Link>
           <p style={{ fontSize: 13, color: "#64748b", marginTop: 12 }}>
             Works in ChatGPT, Claude, or any AI tool. Copy, paste, go.
