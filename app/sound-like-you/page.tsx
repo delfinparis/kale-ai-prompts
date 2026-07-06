@@ -439,7 +439,7 @@ export default function SoundLikeYouPage() {
         {/* More Prompts CTA */}
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <p style={{ fontSize: 14, color: "#64748b", marginBottom: 16 }}>
-            Want more? The full vault has 570 prompts built for agents.
+            Want more? The full vault has 620 prompts built for agents.
           </p>
           <Link
             href="/"
@@ -455,7 +455,7 @@ export default function SoundLikeYouPage() {
               textDecoration: "none",
             }}
           >
-            Browse All 570 Prompts
+            Browse All 620 Prompts
           </Link>
         </div>
 
