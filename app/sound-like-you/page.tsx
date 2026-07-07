@@ -375,7 +375,7 @@ export default function SoundLikeYouPage() {
             className={spaceGrotesk.className}
             style={{ fontSize: 21, fontWeight: 700, marginBottom: 8 }}
           >
-            Want me to build your voiceprint with you?
+            Want business-generating ideas from me?
           </h2>
           <p
             style={{
@@ -385,9 +385,10 @@ export default function SoundLikeYouPage() {
               marginBottom: 6,
             }}
           >
-            I am doing free 15-minute one-on-ones this week. We build your voice
-            live on your real writing, and you leave with your first cleaned-up
-            message and a simple 30-day plan.
+            I am doing free 15-minute one-on-ones this week. I will give you
+            business-generating ideas using the top-secret AI strategies most
+            agents have not seen, built around your market, plus a simple 30-day
+            plan to run them.
           </p>
           <p
             style={{
