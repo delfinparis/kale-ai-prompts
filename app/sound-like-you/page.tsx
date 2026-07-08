@@ -13,12 +13,12 @@ export default function SoundLikeYouPage() {
         minHeight: "100vh",
         background: "#0a1628",
         color: "#e2e8f0",
-        padding: "32px 16px 64px",
+        padding: "clamp(20px, 5vw, 32px) 16px clamp(20px, 5vw, 64px)",
       }}
     >
       <div style={{ maxWidth: 620, margin: "0 auto" }}>
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 34 }}>
+        <div style={{ textAlign: "center", marginBottom: "clamp(22px, 5vw, 34px)" }}>
           <div
             style={{
               display: "inline-block",
@@ -77,8 +77,8 @@ export default function SoundLikeYouPage() {
             background: "rgba(255,255,255,0.03)",
             border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: 12,
-            padding: "20px 22px",
-            marginBottom: 30,
+            padding: "clamp(16px, 4vw, 20px) 22px",
+            marginBottom: "clamp(18px, 4.5vw, 30px)",
           }}
         >
           <h3
@@ -131,8 +131,8 @@ export default function SoundLikeYouPage() {
               background: "rgba(255,255,255,0.03)",
               border: "1px solid rgba(255,255,255,0.08)",
               borderRadius: 14,
-              padding: "24px 22px",
-              marginBottom: 20,
+              padding: "clamp(18px, 5vw, 24px) 22px",
+              marginBottom: "clamp(14px, 3.5vw, 20px)",
             }}
           >
             <div
@@ -255,8 +255,8 @@ export default function SoundLikeYouPage() {
             background: "rgba(245, 158, 11, 0.06)",
             border: "1px solid rgba(245, 158, 11, 0.2)",
             borderRadius: 12,
-            padding: "20px 22px",
-            marginBottom: 30,
+            padding: "clamp(16px, 4vw, 20px) 22px",
+            marginBottom: "clamp(18px, 4.5vw, 30px)",
           }}
         >
           <h3
@@ -366,8 +366,8 @@ export default function SoundLikeYouPage() {
             background: "rgba(124, 58, 237, 0.06)",
             border: "1px solid rgba(124, 58, 237, 0.15)",
             borderRadius: 14,
-            padding: "28px 24px",
-            marginBottom: 30,
+            padding: "clamp(20px, 5vw, 28px) 24px",
+            marginBottom: "clamp(18px, 4.5vw, 30px)",
             textAlign: "center",
           }}
         >
@@ -410,6 +410,7 @@ export default function SoundLikeYouPage() {
             }}
           >
             <Image
+              className="hide-on-mobile"
               src="/qr-strategy-session.png"
               alt="Scan to book a strategy session"
               width={172}
@@ -438,7 +439,7 @@ export default function SoundLikeYouPage() {
         </div>
 
         {/* More Prompts CTA */}
-        <div style={{ textAlign: "center", marginBottom: 30 }}>
+        <div style={{ textAlign: "center", marginBottom: "clamp(18px, 4.5vw, 30px)" }}>
           <p style={{ fontSize: 14, color: "#64748b", marginBottom: 16 }}>
             Want more? The full vault has 620 prompts built for agents.
           </p>
@@ -464,7 +465,7 @@ export default function SoundLikeYouPage() {
         <div
           style={{
             borderTop: "1px solid rgba(255,255,255,0.06)",
-            paddingTop: 24,
+            paddingTop: "clamp(18px, 4.5vw, 24px)",
             textAlign: "center",
           }}
         >
