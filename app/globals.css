@@ -163,6 +163,11 @@ body {
     font-size: 15px !important;
     min-height: 52px;
   }
+  /* QR codes aren't scannable on the same phone that's viewing the page,
+     and duplicate the CTA button below them - hide on mobile to reclaim height */
+  .hide-on-mobile {
+    display: none !important;
+  }
   /* Variable hint marks - hide example text on mobile, show on tap */
   .prompt-text mark {
     font-size: 0.95em;

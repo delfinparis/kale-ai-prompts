@@ -13,12 +13,12 @@ export default function SoundLikeYouPage() {
         minHeight: "100vh",
         background: "#0a1628",
         color: "#e2e8f0",
-        padding: "32px 16px 64px",
+        padding: "clamp(20px, 5vw, 32px) 16px clamp(20px, 5vw, 64px)",
       }}
     >
       <div style={{ maxWidth: 620, margin: "0 auto" }}>
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 34 }}>
+        <div style={{ textAlign: "center", marginBottom: "clamp(22px, 5vw, 34px)" }}>
           <div
             style={{
               display: "inline-block",
@@ -69,7 +69,108 @@ export default function SoundLikeYouPage() {
             way too long to screenshot, so I built you this page. Copy them
             straight into your AI.
           </p>
+          <div
+            style={{
+              marginTop: 18,
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "6px 10px",
+              fontSize: 12.5,
+              color: "#94a3b8",
+              fontWeight: 500,
+            }}
+          >
+            <span>
+              Host of{" "}
+              <strong style={{ color: "#cbd5e1", fontWeight: 700 }}>
+                Keeping It Real
+              </strong>
+            </span>
+            <span style={{ color: "#475569" }} aria-hidden>
+              &bull;
+            </span>
+            <span>Nearly 10M downloads</span>
+            <span style={{ color: "#475569" }} aria-hidden>
+              &bull;
+            </span>
+            <span>NAR 2026 AI Influencer</span>
+          </div>
         </div>
+
+        {/* Video */}
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            paddingBottom: "56.25%",
+            marginBottom: 10,
+            borderRadius: 12,
+            overflow: "hidden",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <iframe
+            src="https://www.youtube.com/embed/q3UwsD_g0Cc?rel=0"
+            title="Make AI sound exactly like you"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              border: "none",
+            }}
+          />
+        </div>
+        <p
+          style={{
+            fontSize: 12,
+            color: "#94a3b8",
+            textAlign: "center",
+            marginBottom: "clamp(18px, 4.5vw, 30px)",
+          }}
+        >
+          Watch this first, then grab the prompts below.
+        </p>
+
+        {/* Inline strategy-session nudge */}
+        <a
+          href="https://calendly.com/joinkale/ai-strategy-session"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px 10px",
+            textAlign: "center",
+            background: "rgba(124, 58, 237, 0.06)",
+            border: "1px solid rgba(124, 58, 237, 0.18)",
+            borderRadius: 10,
+            padding: "12px 18px",
+            marginBottom: "clamp(18px, 4.5vw, 30px)",
+            textDecoration: "none",
+            color: "#cbd5e1",
+            fontSize: 13.5,
+            lineHeight: 1.5,
+          }}
+        >
+          <span>Want these built around your market?</span>
+          <span
+            style={{
+              color: "#a78bfa",
+              fontWeight: 700,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Book a free 15-min session &rarr;
+          </span>
+        </a>
 
         {/* How to run them */}
         <div
@@ -77,8 +178,8 @@ export default function SoundLikeYouPage() {
             background: "rgba(255,255,255,0.03)",
             border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: 12,
-            padding: "20px 22px",
-            marginBottom: 30,
+            padding: "clamp(16px, 4vw, 20px) 22px",
+            marginBottom: "clamp(18px, 4.5vw, 30px)",
           }}
         >
           <h3
@@ -131,8 +232,8 @@ export default function SoundLikeYouPage() {
               background: "rgba(255,255,255,0.03)",
               border: "1px solid rgba(255,255,255,0.08)",
               borderRadius: 14,
-              padding: "24px 22px",
-              marginBottom: 20,
+              padding: "clamp(18px, 5vw, 24px) 22px",
+              marginBottom: "clamp(14px, 3.5vw, 20px)",
             }}
           >
             <div
@@ -186,13 +287,13 @@ export default function SoundLikeYouPage() {
               }}
             >
               <div style={{ display: "flex", gap: 8 }}>
-                <span style={{ color: "#64748b", minWidth: 66, fontWeight: 600 }}>
+                <span style={{ color: "#94a3b8", minWidth: 66, fontWeight: 600 }}>
                   Best for
                 </span>
                 <span style={{ color: "#cbd5e1" }}>{p.bestFor}</span>
               </div>
               <div style={{ display: "flex", gap: 8 }}>
-                <span style={{ color: "#64748b", minWidth: 66, fontWeight: 600 }}>
+                <span style={{ color: "#94a3b8", minWidth: 66, fontWeight: 600 }}>
                   How to use
                 </span>
                 <span style={{ color: "#cbd5e1" }}>{p.howToUse}</span>
@@ -255,8 +356,8 @@ export default function SoundLikeYouPage() {
             background: "rgba(245, 158, 11, 0.06)",
             border: "1px solid rgba(245, 158, 11, 0.2)",
             borderRadius: 12,
-            padding: "20px 22px",
-            marginBottom: 30,
+            padding: "clamp(16px, 4vw, 20px) 22px",
+            marginBottom: "clamp(18px, 4.5vw, 30px)",
           }}
         >
           <h3
@@ -308,7 +409,7 @@ export default function SoundLikeYouPage() {
             </summary>
             <div style={{ marginTop: 12, fontSize: 12.5, color: "#cbd5e1", lineHeight: 1.6 }}>
               <p style={{ marginBottom: 8 }}>
-                <span style={{ color: "#64748b" }}>
+                <span style={{ color: "#94a3b8" }}>
                   Menus move around. If the wording is different, look for the
                   words <strong>Connectors</strong>, <strong>Apps</strong>, or{" "}
                   <strong>Extensions</strong>. That is always where this lives.
@@ -349,7 +450,7 @@ export default function SoundLikeYouPage() {
                 wrote, then build my Voiceprint Profile from that, quoting real
                 lines of mine as evidence.
               </div>
-              <p style={{ marginTop: 10, color: "#64748b", fontSize: 12 }}>
+              <p style={{ marginTop: 10, color: "#94a3b8", fontSize: 12 }}>
                 When you are done you can disconnect it in the same screen. Your
                 saved voiceprint stays. Rules on AI and data change fast and vary
                 by market, so check your local board, your state association, and
@@ -366,8 +467,8 @@ export default function SoundLikeYouPage() {
             background: "rgba(124, 58, 237, 0.06)",
             border: "1px solid rgba(124, 58, 237, 0.15)",
             borderRadius: 14,
-            padding: "28px 24px",
-            marginBottom: 30,
+            padding: "clamp(20px, 5vw, 28px) 24px",
+            marginBottom: "clamp(18px, 4.5vw, 30px)",
             textAlign: "center",
           }}
         >
@@ -386,14 +487,14 @@ export default function SoundLikeYouPage() {
             }}
           >
             I am doing free 15-minute one-on-ones this week. I will give you
-            business-generating ideas using the top-secret AI strategies most
-            agents have not seen, built around your market, plus a simple 30-day
-            plan to run them.
+            business-generating ideas using the AI strategies most agents have
+            not seen, built around your market, plus a simple 30-day plan to run
+            them.
           </p>
           <p
             style={{
               fontSize: 13,
-              color: "#64748b",
+              color: "#94a3b8",
               lineHeight: 1.5,
               marginBottom: 20,
             }}
@@ -410,6 +511,7 @@ export default function SoundLikeYouPage() {
             }}
           >
             <Image
+              className="hide-on-mobile"
               src="/qr-strategy-session.png"
               alt="Scan to book a strategy session"
               width={172}
@@ -438,8 +540,8 @@ export default function SoundLikeYouPage() {
         </div>
 
         {/* More Prompts CTA */}
-        <div style={{ textAlign: "center", marginBottom: 30 }}>
-          <p style={{ fontSize: 14, color: "#64748b", marginBottom: 16 }}>
+        <div style={{ textAlign: "center", marginBottom: "clamp(18px, 4.5vw, 30px)" }}>
+          <p style={{ fontSize: 14, color: "#94a3b8", marginBottom: 16 }}>
             Want more? The full vault has 620 prompts built for agents.
           </p>
           <Link
@@ -464,11 +566,11 @@ export default function SoundLikeYouPage() {
         <div
           style={{
             borderTop: "1px solid rgba(255,255,255,0.06)",
-            paddingTop: 24,
+            paddingTop: "clamp(18px, 4.5vw, 24px)",
             textAlign: "center",
           }}
         >
-          <p style={{ fontSize: 13, color: "#475569", lineHeight: 1.7 }}>
+          <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.7 }}>
             D.J. Paris - Keeping It Real Podcast - Kale Realty
             <br />
             <a
