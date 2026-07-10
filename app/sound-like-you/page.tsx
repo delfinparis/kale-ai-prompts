@@ -95,7 +95,7 @@ export default function SoundLikeYouPage() {
             <span style={{ color: "#475569" }} aria-hidden>
               &bull;
             </span>
-            <span>NAR 2026 AI Influencer</span>
+            <span>NAR 2026 Real Estate Influencer</span>
           </div>
         </div>
 
