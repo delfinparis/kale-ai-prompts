@@ -5,7 +5,7 @@ export const runtime = "nodejs"; // node crypto needed for CAPI hashing; keep of
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, level, eventId, eventSourceUrl, fbp, fbc, promptText, promptTitle } =
+    const { email, level, eventId, eventSourceUrl, fbp, fbc, promptText, promptTitle, src } =
       await req.json();
 
     if (!email || !email.includes("@")) {
@@ -23,6 +23,21 @@ export async function POST(req: NextRequest) {
           : level === "top"
             ? "Top Producer (20+ deals/yr)"
             : "Not specified";
+
+    // Lead source for Close. LinkedIn gated carousels link here with a ?src=li-<slug>
+    // tag (see video-strategy repo data/keyword-registry.md) so a LinkedIn tool lead is
+    // distinguishable from an IG/FB ManyChat gate lead and from an organic tapthis visitor.
+    // Without the tag all three collapse into one bucket and attribution is lost.
+    const SRC_LABELS: Record<string, string> = {
+      "li-scripts": "LinkedIn - Scripts",
+      "li-prompts": "LinkedIn - Prompts",
+      "li-voice": "LinkedIn - Voice",
+      "li-toolkit": "LinkedIn - Toolkit",
+    };
+    const leadSource =
+      typeof src === "string" && src.trim()
+        ? SRC_LABELS[src.trim()] || `Web - ${src.trim()}`
+        : "Copy That";
 
     // Send to Google Sheets (non-blocking)
     const webhookUrl = process.env.PROMPT_VAULT_SHEETS_WEBHOOK_URL;
@@ -62,7 +77,10 @@ export async function POST(req: NextRequest) {
               emails: [{ email, type: "office" }],
             },
           ],
-          "custom.cf_c09clx40GuQEME4aFK13bHwS57NdQOUTMWI5KAq9EfY": "Copy That",
+          // Kale Lead Source. This previously wrote to cf_c09clx40... which is "Lead Type"
+          // (the A/B/C field) -- every capture was invisible to source reporting AND was
+          // quietly corrupting Lead Type. Fixed 2026-07-22.
+          "custom.cf_U9j9E5v9LuS4SMLZfI854gU88tmhi0GLVlxtzbZp1yD": leadSource,
         }),
       })
         .then((res) => res.json())
@@ -77,7 +95,7 @@ export async function POST(req: NextRequest) {
               },
               body: JSON.stringify({
                 lead_id: lead.id,
-                note: `Source: Copy That\nExperience Level: ${levelLabel}\nCaptured: ${new Date().toISOString()}`,
+                note: `Source: ${leadSource}\nExperience Level: ${levelLabel}\nCaptured: ${new Date().toISOString()}`,
               }),
             }).catch(() => {});
           }
