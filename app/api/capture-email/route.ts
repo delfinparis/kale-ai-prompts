@@ -5,7 +5,7 @@ export const runtime = "nodejs"; // node crypto needed for CAPI hashing; keep of
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, level, eventId, eventSourceUrl, fbp, fbc, promptText, promptTitle, src } =
+    const { email, level, eventId, eventSourceUrl, fbp, fbc, promptText, promptTitle, src, firstName } =
       await req.json();
 
     if (!email || !email.includes("@")) {
@@ -39,6 +39,14 @@ export async function POST(req: NextRequest) {
         ? SRC_LABELS[src.trim()] || `Web - ${src.trim()}`
         : "Copy That";
 
+    // Optional first name. The joinkale.com gated lead magnets (Objection Response
+    // Vault and the vaults after it) collect first name + email, so the lead lands in
+    // Close as a person rather than a bare address. Everything else still posts email
+    // only, which is why this stays optional and falls back to the address.
+    const cleanFirstName =
+      typeof firstName === "string" && firstName.trim() ? firstName.trim().slice(0, 60) : "";
+    const leadName = cleanFirstName ? `${cleanFirstName} (${email})` : email;
+
     // Send to Google Sheets (non-blocking)
     const webhookUrl = process.env.PROMPT_VAULT_SHEETS_WEBHOOK_URL;
     if (webhookUrl) {
@@ -70,10 +78,11 @@ export async function POST(req: NextRequest) {
           Authorization: authHeader,
         },
         body: JSON.stringify({
-          name: email,
+          name: leadName,
           status_id: "stat_broiYwml7eEj5SFwAvolMOhK0bPsA961YhnhVgyqtDJ",
           contacts: [
             {
+              ...(cleanFirstName ? { name: cleanFirstName } : {}),
               emails: [{ email, type: "office" }],
             },
           ],
