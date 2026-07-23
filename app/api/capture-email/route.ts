@@ -3,7 +3,34 @@ import { sendCapiEvent } from "@/lib/meta-capi";
 
 export const runtime = "nodejs"; // node crypto needed for CAPI hashing; keep off the Edge runtime
 
+// The gated lead magnets on joinkale.com (a Squarespace site) post here from a different
+// origin, so this route has to answer CORS preflight and echo an allowed origin. Same-origin
+// callers on tapthis.co are unaffected. Keep this an allowlist, never "*", because the route
+// creates Close leads and fires Meta CAPI.
+const ALLOWED_ORIGINS = new Set([
+  "https://joinkale.com",
+  "https://www.joinkale.com",
+]);
+
+function corsHeaders(origin: string | null): Record<string, string> {
+  if (!origin || !ALLOWED_ORIGINS.has(origin)) return {};
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Vary": "Origin",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+}
+
+export async function OPTIONS(req: NextRequest) {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders(req.headers.get("origin")),
+  });
+}
+
 export async function POST(req: NextRequest) {
+  const cors = corsHeaders(req.headers.get("origin"));
   try {
     const { email, level, eventId, eventSourceUrl, fbp, fbc, promptText, promptTitle, src, firstName } =
       await req.json();
@@ -11,7 +38,7 @@ export async function POST(req: NextRequest) {
     if (!email || !email.includes("@")) {
       return NextResponse.json(
         { error: "Valid email required" },
-        { status: 400 }
+        { status: 400, headers: cors }
       );
     }
 
@@ -157,9 +184,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true }, { headers: cors });
   } catch (error) {
     console.error("Email capture error:", error);
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true }, { headers: cors });
   }
 }
