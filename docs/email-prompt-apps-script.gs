@@ -40,15 +40,25 @@ function doPost(e) {
       return json_({ ok: false, error: "missing to or promptText" });
     }
 
-    var subject = "Your prompt: " + title;
-    var body =
-      "Here's the prompt you grabbed on tapthis.co, saved as a backup so you have it.\n\n" +
-      title +
-      "\n\n----------\n\n" +
-      promptText +
-      "\n\n----------\n\n" +
-      "Paste it into ChatGPT, Claude, or Gemini. More prompts at https://tapthis.co\n\n" +
-      "- D.J. Paris";
+    var subject, body;
+    // joinkale.com Broker Solutions one-pagers reuse this webhook. Those pages
+    // send a promptText that starts with this exact sentence, which is how we
+    // tell them apart without changing the tapthis.co capture route. If you ever
+    // change that sentence on the pages, change it here too.
+    if (promptText.indexOf("Here is the one-pager you asked for.") === 0) {
+      subject = "Your one-pager: " + title;
+      body = promptText + "\n\n- D.J. Paris";
+    } else {
+      subject = "Your prompt: " + title;
+      body =
+        "Here's the prompt you grabbed on tapthis.co, saved as a backup so you have it.\n\n" +
+        title +
+        "\n\n----------\n\n" +
+        promptText +
+        "\n\n----------\n\n" +
+        "Paste it into ChatGPT, Claude, or Gemini. More prompts at https://tapthis.co\n\n" +
+        "- D.J. Paris";
+    }
 
     GmailApp.sendEmail(to, subject, body, { name: "D.J. Paris" });
     return json_({ ok: true });
