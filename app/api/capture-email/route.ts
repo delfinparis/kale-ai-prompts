@@ -22,6 +22,22 @@ function corsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
+// Vercel adds approximate location headers to every request. The city arrives
+// URL-encoded ("San%20Francisco"). Missing headers (local dev) just yield nothing.
+function ipLocation(req: NextRequest) {
+  const h = (name: string) => req.headers.get(name) || undefined;
+  let city = h("x-vercel-ip-city");
+  if (city) {
+    try { city = decodeURIComponent(city); } catch { /* leave as-is */ }
+  }
+  return {
+    city,
+    state: h("x-vercel-ip-country-region"),
+    zip: h("x-vercel-ip-postal-code"),
+    country: h("x-vercel-ip-country"),
+  };
+}
+
 export async function OPTIONS(req: NextRequest) {
   return new NextResponse(null, {
     status: 204,
@@ -151,6 +167,10 @@ export async function POST(req: NextRequest) {
         eventSourceUrl: eventSourceUrl || req.headers.get("referer") || undefined,
         userData: {
           email,
+          // Richer matching for Meta (Events Manager asked for it). The first name
+          // is what the visitor typed; location is Vercel's approximate IP geolocation.
+          firstName: cleanFirstName || undefined,
+          ...ipLocation(req),
           clientIpAddress:
             req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || undefined,
           clientUserAgent: req.headers.get("user-agent") || undefined,

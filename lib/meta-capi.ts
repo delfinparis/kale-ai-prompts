@@ -19,11 +19,48 @@ function hash(value?: string | null): string | undefined {
   return createHash("sha256").update(normalized).digest("hex");
 }
 
+// Location fields each have their own normalization rule before hashing.
+// https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/customer-information-parameters
+function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+// City: lowercase letters only, no spaces or punctuation ("St. Louis" -> "stlouis").
+export function normCity(v?: string | null): string | undefined {
+  if (!v) return undefined;
+  const s = v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+  return s || undefined;
+}
+// State: lowercase code, letters and digits only ("IL" -> "il").
+export function normState(v?: string | null): string | undefined {
+  if (!v) return undefined;
+  const s = v.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return s || undefined;
+}
+// ZIP: lowercase, no spaces or dashes; US ZIPs use the first 5 digits only.
+export function normZip(v?: string | null, country?: string | null): string | undefined {
+  if (!v) return undefined;
+  let s = v.toLowerCase().replace(/[\s-]/g, "");
+  if ((country || "").toLowerCase() === "us") s = s.replace(/\D/g, "").slice(0, 5);
+  return s || undefined;
+}
+// Country: two-letter ISO code, lowercase ("US" -> "us").
+export function normCountry(v?: string | null): string | undefined {
+  if (!v) return undefined;
+  const s = v.toLowerCase().replace(/[^a-z]/g, "");
+  return s.length === 2 ? s : undefined;
+}
+
 type UserData = {
   email?: string | null;
   phone?: string | null;
   firstName?: string | null;
   lastName?: string | null;
+  // Approximate location. On tapthis.co these come from Vercel's IP geolocation
+  // headers, not from anything the visitor typed.
+  city?: string | null;
+  state?: string | null;
+  zip?: string | null;
+  country?: string | null;
   // Passed through un-hashed (Meta hashes/uses these itself):
   clientIpAddress?: string;
   clientUserAgent?: string;
@@ -52,6 +89,10 @@ export async function sendCapiEvent(event: CapiEvent) {
     ph: hash(u.phone),
     fn: hash(u.firstName),
     ln: hash(u.lastName),
+    ct: (() => { const v = normCity(u.city); return v && sha256(v); })(),
+    st: (() => { const v = normState(u.state); return v && sha256(v); })(),
+    zp: (() => { const v = normZip(u.zip, u.country); return v && sha256(v); })(),
+    country: (() => { const v = normCountry(u.country); return v && sha256(v); })(),
     client_ip_address: u.clientIpAddress,
     client_user_agent: u.clientUserAgent,
     fbp: u.fbp,
