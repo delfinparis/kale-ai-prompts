@@ -1,5 +1,10 @@
 /**
  * Backup-prompt emailer for tapthis.co
+ *
+ * LIVE PROJECT: "tapthis emailer" at script.google.com, owned by dj@kalerealty.com
+ * (created ~2026-06-13, renamed from "Untitled project" 2026-09-18). When updating it,
+ * replace only the changed block. The live copy holds the real SHARED_TOKEN; this file
+ * has a placeholder, so pasting the whole file would break every email.
  * ------------------------------------
  * A Google Apps Script web app that sends the "here's your prompt as a backup"
  * email from dj@kalerealty.com via Gmail. The site's /api/capture-email route
