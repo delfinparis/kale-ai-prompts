@@ -50,7 +50,12 @@ function doPost(e) {
     // send a promptText that starts with this exact sentence, which is how we
     // tell them apart without changing the tapthis.co capture route. If you ever
     // change that sentence on the pages, change it here too.
-    if (promptText.indexOf("Here is the one-pager you asked for.") === 0) {
+    if (data.kind === "notify") {
+      // Internal heads-up to D.J. when a joinkale.com one-pager is requested.
+      // The capture route writes the whole subject and body; send them as-is.
+      subject = title;
+      body = promptText;
+    } else if (promptText.indexOf("Here is the one-pager you asked for.") === 0) {
       subject = "Your one-pager: " + title;
       body = promptText + "\n\n- D.J. Paris";
     } else {

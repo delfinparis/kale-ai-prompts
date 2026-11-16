@@ -12,6 +12,18 @@ const ALLOWED_ORIGINS = new Set([
   "https://www.joinkale.com",
 ]);
 
+// Sources that get a human follow-up: a Close task for Ahmed and a heads-up email to D.J.
+// Only the joinkale.com one-pager forms for now. The tapthis.co prompt gates are national,
+// high-volume and anonymous, so they stay capture-only.
+const FOLLOW_UP_SRCS = new Set(["jk-onething"]);
+const AHMED_USER_ID = "user_WRtgYeUnex3DDWs34EIVdjBRhRHyXTQ2hLMz8NfhiYh"; // Ahmed Khaled
+const DEFAULT_NOTIFY_EMAIL = "dj@kalerealty.com";
+
+// Close wants a plain date for a task. Use Chicago's, so a 9pm request is still "today".
+function chicagoToday(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago" }).format(new Date());
+}
+
 function corsHeaders(origin: string | null): Record<string, string> {
   if (!origin || !ALLOWED_ORIGINS.has(origin)) return {};
   return {
@@ -90,6 +102,17 @@ export async function POST(req: NextRequest) {
       typeof firstName === "string" && firstName.trim() ? firstName.trim().slice(0, 60) : "";
     const leadName = cleanFirstName ? `${cleanFirstName} (${email})` : email;
 
+    // Which page they were on. The one-pager forms send the page's H1 as promptTitle and
+    // the page address as eventSourceUrl; without these on the lead, whoever follows up
+    // can't tell which of the problems the agent raised a hand for.
+    const wantsFollowUp = typeof src === "string" && FOLLOW_UP_SRCS.has(src.trim());
+    const pageTitle =
+      typeof promptTitle === "string" && promptTitle.trim() ? promptTitle.trim().slice(0, 200) : "";
+    const pageUrl =
+      typeof eventSourceUrl === "string" && /^https:\/\//.test(eventSourceUrl)
+        ? eventSourceUrl.split("?")[0].slice(0, 300)
+        : "";
+
     // Send to Google Sheets (non-blocking)
     const webhookUrl = process.env.PROMPT_VAULT_SHEETS_WEBHOOK_URL;
     if (webhookUrl) {
@@ -108,19 +131,26 @@ export async function POST(req: NextRequest) {
       }).catch(() => {});
     }
 
-    // Send to Close CRM (non-blocking)
+    // Send to Close CRM. Started here and awaited just before the response, so it runs
+    // alongside the Meta and email calls but is finished before the function freezes.
+    // Resolves to the new lead's id, or "" if Close is off or the create failed.
+    let closeWork: Promise<string> = Promise.resolve("");
     const closeApiKey = process.env.CLOSE_API_KEY;
     if (closeApiKey) {
       const authHeader = `Basic ${Buffer.from(`${closeApiKey}:`).toString("base64")}`;
+      const closePost = async (path: string, body: unknown) => {
+        const res = await fetch(`https://api.close.com/api/v1${path}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: authHeader },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error(`Close ${path} returned ${res.status}`);
+        return res.json();
+      };
 
-      // Create lead with email only, status = "New Lead"
-      fetch("https://api.close.com/api/v1/lead/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: authHeader,
-        },
-        body: JSON.stringify({
+      closeWork = (async () => {
+        // Create lead with email only, status = "New Lead"
+        const lead = await closePost("/lead/", {
           name: leadName,
           status_id: "stat_broiYwml7eEj5SFwAvolMOhK0bPsA961YhnhVgyqtDJ",
           contacts: [
@@ -133,26 +163,40 @@ export async function POST(req: NextRequest) {
           // (the A/B/C field) -- every capture was invisible to source reporting AND was
           // quietly corrupting Lead Type. Fixed 2026-07-22.
           "custom.cf_U9j9E5v9LuS4SMLZfI854gU88tmhi0GLVlxtzbZp1yD": leadSource,
-        }),
-      })
-        .then((res) => res.json())
-        .then((lead) => {
+        });
+        if (!lead?.id) return "";
+
+        const pageLines =
+          (pageTitle ? `\nPage: ${pageTitle}` : "") + (pageUrl ? `\nPage URL: ${pageUrl}` : "");
+        const jobs: Promise<unknown>[] = [
           // Add a note with source details
-          if (lead?.id) {
-            fetch("https://api.close.com/api/v1/activity/note/", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: authHeader,
-              },
-              body: JSON.stringify({
-                lead_id: lead.id,
-                note: `Source: ${leadSource}\nExperience Level: ${levelLabel}\nCaptured: ${new Date().toISOString()}`,
-              }),
-            }).catch(() => {});
-          }
-        })
-        .catch(() => {});
+          closePost("/activity/note/", {
+            lead_id: lead.id,
+            note: `Source: ${leadSource}${pageLines}\nExperience Level: ${levelLabel}\nCaptured: ${new Date().toISOString()}`,
+          }),
+        ];
+        if (wantsFollowUp) {
+          jobs.push(
+            closePost("/task/", {
+              _type: "lead",
+              lead_id: lead.id,
+              assigned_to: AHMED_USER_ID,
+              date: chicagoToday(),
+              text:
+                `One-pager request from joinkale.com: "${pageTitle || "page not recorded"}". ` +
+                `${cleanFirstName || "This agent"} asked for the printable sheet. ` +
+                `The form collects email only, so look them up for a phone number, then follow up.`,
+            })
+          );
+        }
+        for (const r of await Promise.allSettled(jobs)) {
+          if (r.status === "rejected") console.error("Close follow-up failed:", r.reason);
+        }
+        return lead.id as string;
+      })().catch((err) => {
+        console.error("Close lead capture failed:", err);
+        return "";
+      });
     }
 
     // Fire the Meta CAPI Lead server-side. This is the priority event: it carries
@@ -201,6 +245,36 @@ export async function POST(req: NextRequest) {
         });
       } catch (err) {
         console.error("Prompt backup email failed:", err);
+      }
+    }
+
+    const closeLeadId = await closeWork;
+
+    // Heads-up to D.J. that a one-pager was requested. Same Apps Script webhook as the
+    // visitor's copy; kind "notify" tells it to send the subject and body as written
+    // (see docs/email-prompt-apps-script.gs).
+    if (emailWebhookUrl && wantsFollowUp) {
+      try {
+        await fetch(emailWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: process.env.PROMPT_EMAIL_WEBHOOK_TOKEN || "",
+            kind: "notify",
+            to: process.env.LEAD_NOTIFY_EMAIL || DEFAULT_NOTIFY_EMAIL,
+            promptTitle: `One-pager request: ${cleanFirstName || email}`,
+            promptText:
+              `${cleanFirstName || "Someone"} (${email}) just asked for a one-pager on joinkale.com.\n\n` +
+              `Page: ${pageTitle || "not recorded"}\n` +
+              (pageUrl ? `${pageUrl}\n` : "") +
+              `\n` +
+              (closeLeadId
+                ? `Close lead: https://app.close.com/lead/${closeLeadId}/\nAhmed has a follow-up task due today.`
+                : `The Close lead was NOT created, so there is no task for Ahmed. Add this one by hand.`),
+          }),
+        });
+      } catch (err) {
+        console.error("Lead notification email failed:", err);
       }
     }
 
